@@ -1,30 +1,53 @@
-# Get Go image from DockerHub.
-FROM golang:1.19.4 AS api
+# Build stage
+FROM golang:1.21-alpine AS builder
 
-# Set working directory.
-WORKDIR /compiler
+# Install necessary packages
+RUN apk add --no-cache git ca-certificates tzdata
 
-# Copy dependency locks so we can cache.
-COPY go.mod go.sum ./
-
-# Get all of our dependencies.
-RUN go mod download
-
-# Copy all of our remaining application.
-COPY . .
-
-# Build our application.
-RUN CGO_ENABLED=0 GOOS=linux go build -o server ./main.go
-
-# Use 'scratch' image for super-mini build.
-FROM scratch AS prod
-
-# Set working directory for this stage.
+# Set working directory
 WORKDIR /app
 
-# Copy our compiled executable from the last stage.
-COPY --from=api /compiler/server .
+# Copy go mod files
+COPY go.mod go.sum ./
 
-# Run application and expose port 9999.
+# Download dependencies
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+
+# Final stage
+FROM alpine:latest
+
+# Install ca-certificates for HTTPS requests
+RUN apk --no-cache add ca-certificates tzdata
+
+# Create app user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+WORKDIR /root/
+
+# Copy the binary from builder stage
+COPY --from=builder /app/main .
+
+# Copy migration files
+COPY --from=builder /app/db/migrations ./db/migrations
+
+# Change ownership to app user
+RUN chown -R appuser:appgroup /root/
+
+# Switch to non-root user
+USER appuser
+
+# Expose port
 EXPOSE 9999
-CMD ["./server"]
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:9999/health || exit 1
+
+# Run the application
+CMD ["./main"]

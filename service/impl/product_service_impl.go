@@ -25,9 +25,11 @@ type productServiceImpl struct {
 func (service *productServiceImpl) Create(ctx context.Context, productModel model.ProductCreateOrUpdateModel) model.ProductCreateOrUpdateModel {
 	common.Validate(productModel)
 	product := entity.Product{
-		Name:     productModel.Name,
-		Price:    productModel.Price,
-		Quantity: productModel.Quantity,
+		Name:        productModel.Name,
+		Description: productModel.Description,
+		Price:       productModel.Price,
+		Stock:       productModel.Stock,
+		ImageUrl:    productModel.ImageUrl,
 	}
 	service.ProductRepository.Insert(ctx, product)
 	return productModel
@@ -36,10 +38,12 @@ func (service *productServiceImpl) Create(ctx context.Context, productModel mode
 func (service *productServiceImpl) Update(ctx context.Context, productModel model.ProductCreateOrUpdateModel, id string) model.ProductCreateOrUpdateModel {
 	common.Validate(productModel)
 	product := entity.Product{
-		Id:       uuid.MustParse(id),
-		Name:     productModel.Name,
-		Price:    productModel.Price,
-		Quantity: productModel.Quantity,
+		Id:          uuid.MustParse(id),
+		Name:        productModel.Name,
+		Description: productModel.Description,
+		Price:       productModel.Price,
+		Stock:       productModel.Stock,
+		ImageUrl:    productModel.ImageUrl,
 	}
 	service.ProductRepository.Update(ctx, product)
 	return productModel
@@ -58,25 +62,47 @@ func (service *productServiceImpl) Delete(ctx context.Context, id string) {
 func (service *productServiceImpl) FindById(ctx context.Context, id string) model.ProductModel {
 	productCache := configuration.SetCache[entity.Product](service.Cache, ctx, "product", id, service.ProductRepository.FindById)
 	return model.ProductModel{
-		Id:       productCache.Id.String(),
-		Name:     productCache.Name,
-		Price:    productCache.Price,
-		Quantity: productCache.Quantity,
+		Id:          productCache.Id.String(),
+		Name:        productCache.Name,
+		Description: productCache.Description,
+		Price:       productCache.Price,
+		Stock:       productCache.Stock,
+		ImageUrl:    productCache.ImageUrl,
 	}
 }
 
 func (service *productServiceImpl) FindAll(ctx context.Context) (responses []model.ProductModel) {
-	products := service.ProductRepository.FindAl(ctx)
-	for _, product := range products {
-		responses = append(responses, model.ProductModel{
-			Id:       product.Id.String(),
-			Name:     product.Name,
-			Price:    product.Price,
-			Quantity: product.Quantity,
-		})
-	}
-	if len(products) == 0 {
-		return []model.ProductModel{}
-	}
-	return responses
-}
+ 	products := service.ProductRepository.FindAl(ctx)
+ 	for _, product := range products {
+ 		responses = append(responses, model.ProductModel{
+ 			Id:          product.Id.String(),
+ 			Name:        product.Name,
+ 			Description: product.Description,
+ 			Price:       product.Price,
+ 			Stock:       product.Stock,
+ 			ImageUrl:    product.ImageUrl,
+ 		})
+ 	}
+ 	if len(products) == 0 {
+ 		return []model.ProductModel{}
+ 	}
+ 	return responses
+ }
+
+func (service *productServiceImpl) Search(ctx context.Context, searchModel model.ProductSearchModel) ([]model.ProductModel, int64) {
+ 	products, totalCount := service.ProductRepository.Search(ctx, searchModel)
+
+ 	var responses []model.ProductModel
+ 	for _, product := range products {
+ 		responses = append(responses, model.ProductModel{
+ 			Id:          product.Id.String(),
+ 			Name:        product.Name,
+ 			Description: product.Description,
+ 			Price:       product.Price,
+ 			Stock:       product.Stock,
+ 			ImageUrl:    product.ImageUrl,
+ 		})
+ 	}
+
+ 	return responses, totalCount
+ }

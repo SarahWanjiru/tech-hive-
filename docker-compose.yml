@@ -1,43 +1,114 @@
-version: '3.1'
-
 services:
-
   db:
-    image: mysql
-    command: --default-authentication-plugin=mysql_native_password
+    image: mysql:8.0
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: gofiber_clean_architecture
+      MYSQL_USER: gofiber
+      MYSQL_PASSWORD: gofiber123
     ports:
       - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
   dbtest:
-    image: mysql
-    command: --default-authentication-plugin=mysql_native_password
+    image: mysql:8.0
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: gofiber_clean_architecture_test
     ports:
       - "3307:3306"
+    profiles:
+      - testing
+
+  app:
+    build: .
+    restart: always
+    ports:
+      - "9999:9999"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=gofiber
+      - DB_PASSWORD=gofiber123
+      - DB_NAME=gofiber_clean_architecture
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET_KEY=your-super-secret-jwt-key-change-this-in-production
+      - JWT_EXPIRE_MINUTES_COUNT=60
+      - SERVER_PORT=9999
+      - MPESA_SHORTCODE=174379
+      - MPESA_PASSKEY=your-mpesa-passkey
+      - MPESA_CALLBACK_URL=http://localhost:9999/v1/api/mpesa/callback
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./db/migrations:/app/db/migrations:ro
 
   adminer:
     image: adminer
     restart: always
     ports:
       - "8080:8080"
+    depends_on:
+      - db
 
   redis:
-    image: 'bitnami/redis:latest'
+    image: bitnami/redis:latest
+    restart: always
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/bitnami/redis/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
 
   redis-commander:
     image: rediscommander/redis-commander:latest
+    restart: always
     environment:
       - REDIS_HOSTS=local:redis:6379
     ports:
       - "8081:8081"
+    depends_on:
+      - redis
+    profiles:
+      - tools
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:9999
+      - NODE_ENV=development
+    depends_on:
+      - app
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    profiles:
+      - frontend
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local

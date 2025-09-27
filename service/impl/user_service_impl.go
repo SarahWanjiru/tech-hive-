@@ -19,17 +19,46 @@ type userServiceImpl struct {
 }
 
 func (userService *userServiceImpl) Authentication(ctx context.Context, model model.UserModel) entity.User {
-	userResult, err := userService.UserRepository.Authentication(ctx, model.Username)
-	if err != nil {
-		panic(exception.UnauthorizedError{
-			Message: err.Error(),
+ 	userResult, err := userService.UserRepository.Authentication(ctx, model.Username)
+ 	if err != nil {
+ 		panic(exception.UnauthorizedError{
+ 			Message: err.Error(),
+ 		})
+ 	}
+ 	err = bcrypt.CompareHashAndPassword([]byte(userResult.Password), []byte(model.Password))
+ 	if err != nil {
+ 		panic(exception.UnauthorizedError{
+ 			Message: "incorrect username and password",
+ 		})
+ 	}
+ 	return userResult
+ }
+
+func (userService *userServiceImpl) Register(ctx context.Context, model model.UserRegistrationModel) entity.User {
+	// Check if email already exists
+	_, err := userService.UserRepository.FindByEmail(ctx, model.Email)
+	if err == nil {
+		panic(exception.ValidationError{
+			Message: "email already exists",
 		})
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(userResult.Password), []byte(model.Password))
-	if err != nil {
-		panic(exception.UnauthorizedError{
-			Message: "incorrect username and password",
-		})
+
+	// Hash password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(model.Password), bcrypt.DefaultCost)
+	exception.PanicLogging(err)
+
+	// Create user entity
+	user := entity.User{
+		Password:  string(hashedPassword),
+		Name:      model.Name,
+		Email:     model.Email,
+		Role:      model.Role,
+		IsActive:  true,
 	}
-	return userResult
+
+	// Save user
+	result, err := userService.UserRepository.Register(ctx, user)
+	exception.PanicLogging(err)
+
+	return result
 }

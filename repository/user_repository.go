@@ -6,7 +6,10 @@ import (
 )
 
 type UserRepository interface {
-	Authentication(ctx context.Context, username string) (entity.User, error)
-	Create(username string, password string, roles []string)
+	Authentication(ctx context.Context, email string) (entity.User, error)
+	Register(ctx context.Context, user entity.User) (entity.User, error)
+	FindByUsername(ctx context.Context, username string) (entity.User, error)
+	FindByEmail(ctx context.Context, email string) (entity.User, error)
+	Create(email string, password string, roles []string)
 	DeleteAll()
 }

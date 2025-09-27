@@ -72,10 +72,12 @@ func (transactionService *transactionServiceImpl) FindById(ctx context.Context, 
 			Price:         detail.Price,
 			Quantity:      detail.Quantity,
 			Product: model.ProductModel{
-				Id:       detail.Product.Id.String(),
-				Name:     detail.Product.Name,
-				Price:    detail.Product.Price,
-				Quantity: detail.Product.Quantity,
+				Id:          detail.Product.Id.String(),
+				Name:        detail.Product.Name,
+				Description: detail.Product.Description,
+				Price:       detail.Product.Price,
+				Stock:       detail.Product.Stock,
+				ImageUrl:    detail.Product.ImageUrl,
 			},
 		})
 	}
@@ -98,10 +100,12 @@ func (transactionService *transactionServiceImpl) FindAll(ctx context.Context) (
 				Price:         detail.Price,
 				Quantity:      detail.Quantity,
 				Product: model.ProductModel{
-					Id:       detail.Product.Id.String(),
-					Name:     detail.Product.Name,
-					Price:    detail.Product.Price,
-					Quantity: detail.Product.Quantity,
+					Id:          detail.Product.Id.String(),
+					Name:        detail.Product.Name,
+					Description: detail.Product.Description,
+					Price:       detail.Product.Price,
+					Stock:       detail.Product.Stock,
+					ImageUrl:    detail.Product.ImageUrl,
 				},
 			})
 		}

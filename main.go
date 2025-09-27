@@ -36,27 +36,37 @@ func main() {
 	redis := configuration.NewRedis(config)
 
 	//repository
-	productRepository := repository.NewProductRepositoryImpl(database)
-	transactionRepository := repository.NewTransactionRepositoryImpl(database)
-	transactionDetailRepository := repository.NewTransactionDetailRepositoryImpl(database)
-	userRepository := repository.NewUserRepositoryImpl(database)
+		productRepository := repository.NewProductRepositoryImpl(database)
+		transactionRepository := repository.NewTransactionRepositoryImpl(database)
+		transactionDetailRepository := repository.NewTransactionDetailRepositoryImpl(database)
+		userRepository := repository.NewUserRepositoryImpl(database)
+		cartRepository := repository.NewCartRepositoryImpl(database)
+		orderRepository := repository.NewOrderRepositoryImpl(database)
 
 	//rest client
 	httpBinRestClient := restclient.NewHttpBinRestClient()
 
 	//service
-	productService := service.NewProductServiceImpl(&productRepository, redis)
-	transactionService := service.NewTransactionServiceImpl(&transactionRepository)
-	transactionDetailService := service.NewTransactionDetailServiceImpl(&transactionDetailRepository)
-	userService := service.NewUserServiceImpl(&userRepository)
-	httpBinService := service.NewHttpBinServiceImpl(&httpBinRestClient)
+		productService := service.NewProductServiceImpl(&productRepository, redis)
+		transactionService := service.NewTransactionServiceImpl(&transactionRepository)
+		transactionDetailService := service.NewTransactionDetailServiceImpl(&transactionDetailRepository)
+		userService := service.NewUserServiceImpl(&userRepository)
+		cartService := service.NewCartServiceImpl(&cartRepository, &productRepository, database)
+		orderService := service.NewOrderServiceImpl(&orderRepository, &cartRepository, &productRepository, database)
+		mpesaService := service.NewMpesaServiceImpl(config, &orderRepository, database)
+		seedService := service.NewSeedServiceImpl(&userRepository, &productRepository, database)
+		httpBinService := service.NewHttpBinServiceImpl(&httpBinRestClient)
 
 	//controller
-	productController := controller.NewProductController(&productService, config)
-	transactionController := controller.NewTransactionController(&transactionService, config)
-	transactionDetailController := controller.NewTransactionDetailController(&transactionDetailService, config)
-	userController := controller.NewUserController(&userService, config)
-	httpBinController := controller.NewHttpBinController(&httpBinService)
+		productController := controller.NewProductController(&productService, config)
+		transactionController := controller.NewTransactionController(&transactionService, config)
+		transactionDetailController := controller.NewTransactionDetailController(&transactionDetailService, config)
+		userController := controller.NewUserController(&userService, config)
+		cartController := controller.NewCartController(&cartService, config)
+		orderController := controller.NewOrderController(&orderService, config)
+		mpesaController := controller.NewMpesaController(&mpesaService, config)
+		seedController := controller.NewSeedController(&seedService, config)
+		httpBinController := controller.NewHttpBinController(&httpBinService)
 
 	//setup fiber
 	app := fiber.New(configuration.NewFiberConfiguration())
@@ -64,11 +74,15 @@ func main() {
 	app.Use(cors.New())
 
 	//routing
-	productController.Route(app)
-	transactionController.Route(app)
-	transactionDetailController.Route(app)
-	userController.Route(app)
-	httpBinController.Route(app)
+		productController.Route(app)
+		transactionController.Route(app)
+		transactionDetailController.Route(app)
+		userController.Route(app)
+		cartController.Route(app)
+		orderController.Route(app)
+		mpesaController.Route(app)
+		seedController.Route(app)
+		httpBinController.Route(app)
 
 	//swagger
 	app.Get("/swagger/*", swagger.HandlerDefault)

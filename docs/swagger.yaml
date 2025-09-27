@@ -10,26 +10,36 @@ definitions:
     type: object
   model.ProductCreateOrUpdateModel:
     properties:
+      description:
+        type: string
+      image_url:
+        type: string
       name:
         type: string
       price:
-        type: integer
-      quantity:
+        minimum: 0
+        type: number
+      stock:
+        minimum: 0
         type: integer
     required:
     - name
     - price
-    - quantity
+    - stock
     type: object
   model.ProductModel:
     properties:
+      description:
+        type: string
       id:
+        type: string
+      image_url:
         type: string
       name:
         type: string
       price:
-        type: integer
-      quantity:
+        type: number
+      stock:
         type: integer
     type: object
   model.TransactionCreateUpdateModel:
@@ -68,7 +78,29 @@ definitions:
       password:
         type: string
       username:
+        description: Keep for backward compatibility but will be used as email
         type: string
+    type: object
+  model.UserRegistrationModel:
+    properties:
+      email:
+        type: string
+      name:
+        maxLength: 150
+        type: string
+      password:
+        minLength: 6
+        type: string
+      role:
+        enum:
+        - customer
+        - admin
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - role
     type: object
 host: localhost:9999
 info:
@@ -326,6 +358,28 @@ paths:
       summary: get one exists transaction
       tags:
       - Transaction
+  /v1/api/users:
+    post:
+      consumes:
+      - application/json
+      description: register new user.
+      parameters:
+      - description: Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserRegistrationModel'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      summary: register new user
+      tags:
+      - Register user
 schemes:
 - http
 - https

@@ -409,6 +409,40 @@
                     }
                 }
             }
+        },
+        "/v1/api/users": {
+            "post": {
+                "description": "register new user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Register user"
+                ],
+                "summary": "register new user",
+                "parameters": [
+                    {
+                        "description": "Request Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UserRegistrationModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/model.GeneralResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -429,33 +463,47 @@
             "required": [
                 "name",
                 "price",
-                "quantity"
+                "stock"
             ],
             "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
                 "price": {
-                    "type": "integer"
+                    "type": "number",
+                    "minimum": 0
                 },
-                "quantity": {
-                    "type": "integer"
+                "stock": {
+                    "type": "integer",
+                    "minimum": 0
                 }
             }
         },
         "model.ProductModel": {
             "type": "object",
             "properties": {
+                "description": {
+                    "type": "string"
+                },
                 "id": {
+                    "type": "string"
+                },
+                "image_url": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
                 "price": {
-                    "type": "integer"
+                    "type": "number"
                 },
-                "quantity": {
+                "stock": {
                     "type": "integer"
                 }
             }
@@ -513,7 +561,37 @@
                     "type": "string"
                 },
                 "username": {
+                    "description": "Keep for backward compatibility but will be used as email",
                     "type": "string"
+                }
+            }
+        },
+        "model.UserRegistrationModel": {
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password",
+                "role"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 150
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                },
+                "role": {
+                    "type": "string",
+                    "enum": [
+                        "customer",
+                        "admin"
+                    ]
                 }
             }
         }

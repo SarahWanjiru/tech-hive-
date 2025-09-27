@@ -8,4 +8,5 @@ import (
 
 type UserService interface {
 	Authentication(ctx context.Context, model model.UserModel) entity.User
+	Register(ctx context.Context, model model.UserRegistrationModel) entity.User
 }

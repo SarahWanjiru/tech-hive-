@@ -19,12 +19,13 @@ func NewProductController(productService *service.ProductService, config configu
 }
 
 func (controller ProductController) Route(app *fiber.App) {
-	app.Post("/v1/api/product", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.Create)
-	app.Put("/v1/api/product/:id", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.Update)
-	app.Delete("/v1/api/product/:id", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.Delete)
-	app.Get("/v1/api/product/:id", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.FindById)
-	app.Get("/v1/api/product", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.FindAll)
-}
+ 	app.Post("/v1/api/product", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.Create)
+ 	app.Put("/v1/api/product/:id", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.Update)
+ 	app.Delete("/v1/api/product/:id", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.Delete)
+ 	app.Get("/v1/api/product/:id", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.FindById)
+ 	app.Get("/v1/api/product", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.FindAll)
+ 	app.Post("/v1/api/product/search", middleware.AuthenticateJWT("customer", controller.Config), controller.Search)
+ }
 
 // Create func create product.
 // @Description create product.
@@ -125,10 +126,41 @@ func (controller ProductController) FindById(c *fiber.Ctx) error {
 // @Security JWT
 // @Router /v1/api/product [get]
 func (controller ProductController) FindAll(c *fiber.Ctx) error {
-	result := controller.ProductService.FindAll(c.Context())
-	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
-		Code:    200,
-		Message: "Success",
-		Data:    result,
-	})
-}
+ 	result := controller.ProductService.FindAll(c.Context())
+ 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
+ 		Code:    200,
+ 		Message: "Success",
+ 		Data:    result,
+ 	})
+ }
+
+// Search func search products with filters.
+// @Description Search products with filters and pagination.
+// @Summary search products with filters and pagination
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param request body model.ProductSearchModel true "Search parameters"
+// @Success 200 {object} model.GeneralResponse
+// @Security JWT
+// @Router /v1/api/product/search [post]
+func (controller ProductController) Search(c *fiber.Ctx) error {
+ 	var request model.ProductSearchModel
+ 	err := c.BodyParser(&request)
+ 	exception.PanicLogging(err)
+
+ 	products, totalCount := controller.ProductService.Search(c.Context(), request)
+
+ 	response := map[string]interface{}{
+ 		"products":    products,
+ 		"total_count": totalCount,
+ 		"page":        request.Page,
+ 		"limit":       request.Limit,
+ 	}
+
+ 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
+ 		Code:    200,
+ 		Message: "Search completed successfully",
+ 		Data:    response,
+ 	})
+ }
