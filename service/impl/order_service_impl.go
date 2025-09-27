@@ -5,7 +5,6 @@ import (
 	"errors"
 	"strconv"
 	"github.com/tech-hive/ecommerce/entity"
-	"github.com/tech-hive/ecommerce/exception"
 	"github.com/tech-hive/ecommerce/model"
 	"github.com/tech-hive/ecommerce/repository"
 	"github.com/tech-hive/ecommerce/service"

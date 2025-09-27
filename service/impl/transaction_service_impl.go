@@ -72,7 +72,7 @@ func (transactionService *transactionServiceImpl) FindById(ctx context.Context, 
 			Price:         detail.Price,
 			Quantity:      detail.Quantity,
 			Product: model.ProductModel{
-				Id:          detail.Product.Id.String(),
+				Id:          detail.Product.ProductId.String(),
 				Name:        detail.Product.Name,
 				Description: detail.Product.Description,
 				Price:       detail.Product.Price,
@@ -100,7 +100,7 @@ func (transactionService *transactionServiceImpl) FindAll(ctx context.Context) (
 				Price:         detail.Price,
 				Quantity:      detail.Quantity,
 				Product: model.ProductModel{
-					Id:          detail.Product.Id.String(),
+					Id:          detail.Product.ProductId.String(),
 					Name:        detail.Product.Name,
 					Description: detail.Product.Description,
 					Price:       detail.Product.Price,

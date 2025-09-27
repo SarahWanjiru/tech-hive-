@@ -29,7 +29,7 @@ func (transactionDetailService *transactionDetailServiceImpl) FindById(ctx conte
 		Price:         transactionDetail.Price,
 		Quantity:      transactionDetail.Quantity,
 		Product: model.ProductModel{
-			Id:          transactionDetail.Product.Id.String(),
+			Id:          transactionDetail.Product.ProductId.String(),
 			Name:        transactionDetail.Product.Name,
 			Description: transactionDetail.Product.Description,
 			Price:       transactionDetail.Product.Price,

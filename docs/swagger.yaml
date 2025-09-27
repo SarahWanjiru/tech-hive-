@@ -1,5 +1,26 @@
 basePath: /
 definitions:
+  model.AddToCartModel:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        minimum: 1
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
+  model.CreateOrderModel:
+    properties:
+      cart_id:
+        type: integer
+      shipping_address:
+        type: string
+    required:
+    - cart_id
+    - shipping_address
+    type: object
   model.GeneralResponse:
     properties:
       code:
@@ -7,6 +28,49 @@ definitions:
       data: {}
       message:
         type: string
+    type: object
+  model.MpesaCallbackItem:
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+    type: object
+  model.MpesaCallbackMetadata:
+    properties:
+      item:
+        items:
+          $ref: '#/definitions/model.MpesaCallbackItem'
+        type: array
+    type: object
+  model.MpesaCallbackRequest:
+    properties:
+      callback_metadata:
+        $ref: '#/definitions/model.MpesaCallbackMetadata'
+      checkout_request_id:
+        type: string
+      merchant_request_id:
+        type: string
+      result_code:
+        type: integer
+      result_desc:
+        type: string
+    type: object
+  model.MpesaPaymentRequest:
+    properties:
+      amount:
+        example: 1000
+        minimum: 1
+        type: number
+      order_id:
+        type: integer
+      phone_number:
+        example: "254712345678"
+        type: string
+    required:
+    - amount
+    - order_id
+    - phone_number
     type: object
   model.ProductCreateOrUpdateModel:
     properties:
@@ -42,6 +106,27 @@ definitions:
       stock:
         type: integer
     type: object
+  model.ProductSearchModel:
+    properties:
+      in_stock:
+        type: boolean
+      limit:
+        type: integer
+      max_price:
+        type: number
+      min_price:
+        type: number
+      name:
+        type: string
+      page:
+        type: integer
+      sort_by:
+        description: name, price, created_at
+        type: string
+      sort_order:
+        description: asc, desc
+        type: string
+    type: object
   model.TransactionCreateUpdateModel:
     properties:
       id:
@@ -73,13 +158,39 @@ definitions:
     - quantity
     - sub_total_price
     type: object
+  model.UpdateCartItemModel:
+    properties:
+      quantity:
+        minimum: 1
+        type: integer
+    required:
+    - quantity
+    type: object
+  model.UpdateOrderStatusModel:
+    properties:
+      status:
+        enum:
+        - pending
+        - confirmed
+        - processing
+        - shipped
+        - delivered
+        - cancelled
+        type: string
+    required:
+    - status
+    type: object
   model.UserModel:
     properties:
       password:
+        example: password123
         type: string
       username:
-        description: Keep for backward compatibility but will be used as email
+        example: user@example.com
         type: string
+    required:
+    - password
+    - username
     type: object
   model.UserRegistrationModel:
     properties:
@@ -107,12 +218,12 @@ info:
   contact:
     email: fiber@swagger.io
     name: API Support
-  description: Baseline project using Go Fiber
+  description: Tech Hive E-commerce application using Go Fiber
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: Go Fiber Clean Architecture
+  title: Tech Hive E-commerce
   version: 1.0.0
 paths:
   /v1/api/authentication:
@@ -137,6 +248,274 @@ paths:
       summary: authenticate user
       tags:
       - Authenticate user
+  /v1/api/cart:
+    delete:
+      consumes:
+      - application/json
+      description: Remove all items from the user's shopping cart
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      security:
+      - JWT: []
+      summary: Clear cart
+      tags:
+      - Cart
+    get:
+      consumes:
+      - application/json
+      description: Get the current user's shopping cart
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      security:
+      - JWT: []
+      summary: Get user's cart
+      tags:
+      - Cart
+  /v1/api/cart/items:
+    post:
+      consumes:
+      - application/json
+      description: Add a product to the user's shopping cart
+      parameters:
+      - description: Add to cart request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.AddToCartModel'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      security:
+      - JWT: []
+      summary: Add item to cart
+      tags:
+      - Cart
+  /v1/api/cart/items/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove an item from the user's shopping cart
+      parameters:
+      - description: Cart Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      security:
+      - JWT: []
+      summary: Remove item from cart
+      tags:
+      - Cart
+    put:
+      consumes:
+      - application/json
+      description: Update the quantity of an item in the user's cart
+      parameters:
+      - description: Cart Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update cart item request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateCartItemModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      security:
+      - JWT: []
+      summary: Update cart item quantity
+      tags:
+      - Cart
+  /v1/api/mpesa/callback:
+    post:
+      consumes:
+      - application/json
+      description: Process M-Pesa payment callback (webhook)
+      parameters:
+      - description: M-Pesa callback request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.MpesaCallbackRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      summary: Process M-Pesa callback
+      tags:
+      - M-Pesa
+  /v1/api/mpesa/stkpush:
+    post:
+      consumes:
+      - application/json
+      description: Initiate M-Pesa payment for an order
+      parameters:
+      - description: M-Pesa payment request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.MpesaPaymentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      security:
+      - JWT: []
+      summary: Initiate M-Pesa STK Push
+      tags:
+      - M-Pesa
+  /v1/api/orders:
+    get:
+      consumes:
+      - application/json
+      description: Get all orders for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      security:
+      - JWT: []
+      summary: Get user's orders
+      tags:
+      - Orders
+    post:
+      consumes:
+      - application/json
+      description: Create a new order from the user's cart items
+      parameters:
+      - description: Create order request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateOrderModel'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      security:
+      - JWT: []
+      summary: Create new order from cart
+      tags:
+      - Orders
+  /v1/api/orders/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Cancel a pending order
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      security:
+      - JWT: []
+      summary: Cancel order
+      tags:
+      - Orders
+    get:
+      consumes:
+      - application/json
+      description: Get a specific order by its ID
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      security:
+      - JWT: []
+      summary: Get order by ID
+      tags:
+      - Orders
+  /v1/api/orders/{id}/status:
+    put:
+      consumes:
+      - application/json
+      description: Update the status of an order (admin only)
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update order status request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateOrderStatusModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      security:
+      - JWT: []
+      summary: Update order status
+      tags:
+      - Orders
   /v1/api/product:
     get:
       consumes:
@@ -250,6 +629,75 @@ paths:
       summary: update one exists product
       tags:
       - Product
+  /v1/api/product/search:
+    post:
+      consumes:
+      - application/json
+      description: Search products with filters and pagination.
+      parameters:
+      - description: Search parameters
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.ProductSearchModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      security:
+      - JWT: []
+      summary: search products with filters and pagination
+      tags:
+      - Product
+  /v1/api/seed/all:
+    post:
+      consumes:
+      - application/json
+      description: Create all sample data (users and products) for testing
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      summary: Seed all sample data
+      tags:
+      - Seed
+  /v1/api/seed/products:
+    post:
+      consumes:
+      - application/json
+      description: Create sample products for testing
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      summary: Seed sample products
+      tags:
+      - Seed
+  /v1/api/seed/users:
+    post:
+      consumes:
+      - application/json
+      description: Create sample users for testing
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      summary: Seed sample users
+      tags:
+      - Seed
   /v1/api/transaction:
     get:
       consumes:

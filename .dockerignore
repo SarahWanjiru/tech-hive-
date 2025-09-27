@@ -9,7 +9,7 @@ docker-compose.yml
 
 # Documentation
 README.md
-docs/
+#docs/
 *.md
 
 # IDE
