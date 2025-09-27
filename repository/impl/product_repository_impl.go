@@ -58,11 +58,18 @@ func (repository *productRepositoryImpl) FindByProductId(ctx context.Context, pr
  	return product, nil
  }
 
-func (repository *productRepositoryImpl) FindAl(ctx context.Context) []entity.Product {
- 	var products []entity.Product
- 	repository.DB.WithContext(ctx).Find(&products)
- 	return products
- }
+func (repository *productRepositoryImpl) FindAl(ctx context.Context) ([]entity.Product, int64) {
+  	var products []entity.Product
+  	var totalCount int64
+
+  	// Get total count
+  	repository.DB.WithContext(ctx).Model(&entity.Product{}).Count(&totalCount)
+
+  	// Get all products
+  	repository.DB.WithContext(ctx).Find(&products)
+
+  	return products, totalCount
+  }
 
 func (repository *productRepositoryImpl) Search(ctx context.Context, searchModel model.ProductSearchModel) ([]entity.Product, int64) {
  	query := repository.DB.WithContext(ctx).Model(&entity.Product{})

@@ -36,6 +36,9 @@ COPY --from=builder /app/main .
 # Copy migration files
 COPY --from=builder /app/db/migrations ./db/migrations
 
+# Copy .env file
+COPY --from=builder /app/.env .
+
 # Change ownership to app user
 RUN chown -R appuser:appgroup /root/
 

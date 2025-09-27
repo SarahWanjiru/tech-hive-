@@ -12,8 +12,9 @@ func NewRedis(config Config) *redis.Client {
 	host := config.Get("REDIS_HOST")
 	port := config.Get("REDIS_PORT")
 	maxPoolSize, err := strconv.Atoi(config.Get("REDIS_POOL_MAX_SIZE"))
-	minIdlePoolSize, err := strconv.Atoi(config.Get("REDIS_POOL_MIN_IDLE_SIZE"))
-	exception.PanicLogging(err)
+		exception.PanicLogging(err)
+		minIdlePoolSize, err := strconv.Atoi(config.Get("REDIS_POOL_MIN_IDLE_SIZE"))
+		exception.PanicLogging(err)
 
 	redisStore := redis.NewClient(&redis.Options{
 		Addr:         host + ":" + port,

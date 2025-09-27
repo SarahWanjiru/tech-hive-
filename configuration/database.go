@@ -19,9 +19,11 @@ func NewDatabase(config Config) *gorm.DB {
 	port := config.Get("DATASOURCE_PORT")
 	dbName := config.Get("DATASOURCE_DB_NAME")
 	maxPoolOpen, err := strconv.Atoi(config.Get("DATASOURCE_POOL_MAX_CONN"))
-	maxPoolIdle, err := strconv.Atoi(config.Get("DATASOURCE_POOL_IDLE_CONN"))
-	maxPollLifeTime, err := strconv.Atoi(config.Get("DATASOURCE_POOL_LIFE_TIME"))
-	exception.PanicLogging(err)
+		exception.PanicLogging(err)
+		maxPoolIdle, err := strconv.Atoi(config.Get("DATASOURCE_POOL_IDLE_CONN"))
+		exception.PanicLogging(err)
+		maxPollLifeTime, err := strconv.Atoi(config.Get("DATASOURCE_POOL_LIFE_TIME"))
+		exception.PanicLogging(err)
 
 	loggerDb := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags),

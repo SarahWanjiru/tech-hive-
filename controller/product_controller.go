@@ -19,13 +19,13 @@ func NewProductController(productService *service.ProductService, config configu
 }
 
 func (controller ProductController) Route(app *fiber.App) {
- 	app.Post("/v1/api/product", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.Create)
- 	app.Put("/v1/api/product/:id", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.Update)
- 	app.Delete("/v1/api/product/:id", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.Delete)
- 	app.Get("/v1/api/product/:id", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.FindById)
- 	app.Get("/v1/api/product", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.FindAll)
- 	app.Post("/v1/api/product/search", middleware.AuthenticateJWT("customer", controller.Config), controller.Search)
- }
+  	app.Post("/v1/api/product", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.Create)
+  	app.Put("/v1/api/product/:id", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.Update)
+  	app.Delete("/v1/api/product/:id", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.Delete)
+  	app.Get("/v1/api/product/:id", middleware.AuthenticateJWT("customer", controller.Config), controller.FindById)
+  	app.Get("/v1/api/product", controller.FindAll) // Public endpoint for browsing products
+  	app.Post("/v1/api/product/search", middleware.AuthenticateJWT("customer", controller.Config), controller.Search)
+  }
 
 // Create func create product.
 // @Description create product.
@@ -126,13 +126,21 @@ func (controller ProductController) FindById(c *fiber.Ctx) error {
 // @Security JWT
 // @Router /v1/api/product [get]
 func (controller ProductController) FindAll(c *fiber.Ctx) error {
- 	result := controller.ProductService.FindAll(c.Context())
- 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
- 		Code:    200,
- 		Message: "Success",
- 		Data:    result,
- 	})
- }
+  	products, totalCount := controller.ProductService.FindAll(c.Context())
+
+  	response := map[string]interface{}{
+  		"products":    products,
+  		"total_count": totalCount,
+  		"page":        1,
+  		"limit":       20,
+  	}
+
+  	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
+  		Code:    200,
+  		Message: "Success",
+  		Data:    response,
+  	})
+  }
 
 // Search func search products with filters.
 // @Description Search products with filters and pagination.

@@ -71,23 +71,23 @@ func (service *productServiceImpl) FindById(ctx context.Context, id string) mode
 	}
 }
 
-func (service *productServiceImpl) FindAll(ctx context.Context) (responses []model.ProductModel) {
-  	products := service.ProductRepository.FindAl(ctx)
-  	for _, product := range products {
-  		responses = append(responses, model.ProductModel{
-  			Id:          product.ProductId.String(),
-  			Name:        product.Name,
-  			Description: product.Description,
-  			Price:       product.Price,
-  			Stock:       product.Stock,
-  			ImageUrl:    product.ImageUrl,
-  		})
-  	}
-  	if len(products) == 0 {
-  		return []model.ProductModel{}
-  	}
-  	return responses
-  }
+func (service *productServiceImpl) FindAll(ctx context.Context) ([]model.ProductModel, int64) {
+   	products, totalCount := service.ProductRepository.FindAl(ctx)
+
+   	var responses []model.ProductModel
+   	for _, product := range products {
+   		responses = append(responses, model.ProductModel{
+   			Id:          product.ProductId.String(),
+   			Name:        product.Name,
+   			Description: product.Description,
+   			Price:       product.Price,
+   			Stock:       product.Stock,
+   			ImageUrl:    product.ImageUrl,
+   		})
+   	}
+
+   	return responses, totalCount
+   }
 
 func (service *productServiceImpl) Search(ctx context.Context, searchModel model.ProductSearchModel) ([]model.ProductModel, int64) {
   	products, totalCount := service.ProductRepository.Search(ctx, searchModel)

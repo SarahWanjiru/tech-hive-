@@ -1,7 +1,6 @@
 package configuration
 
 import (
-	"github.com/tech-hive/ecommerce/exception"
 	"github.com/joho/godotenv"
 	"os"
 )
@@ -19,6 +18,9 @@ func (config *configImpl) Get(key string) string {
 
 func New(filenames ...string) Config {
 	err := godotenv.Load(filenames...)
-	exception.PanicLogging(err)
+	if err != nil {
+		// .env file not found, use environment variables directly
+		// This is normal in Docker environments
+	}
 	return &configImpl{}
 }

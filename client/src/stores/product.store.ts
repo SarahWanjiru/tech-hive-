@@ -4,7 +4,7 @@ import type {
   Product,
   ProductCreateOrUpdateModel,
   ProductSearchModel,
-  ProductSearchResponse
+  //ProductSearchResponse
 } from '../types/api'
 
 interface ProductState {
@@ -36,7 +36,9 @@ export const useProductStore = defineStore('product', {
   getters: {
     // Get filtered products based on current filters
     filteredProducts: (state: ProductState): Product[] => {
-      let filtered = [...state.products]
+      // Ensure products is an array before spreading
+      const productsArray = Array.isArray(state.products) ? state.products : []
+      let filtered = [...productsArray]
 
       // Apply search filter
       if (state.filters.name) {

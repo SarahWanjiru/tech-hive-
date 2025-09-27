@@ -15,6 +15,7 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
       retries: 10
+    profiles: ["dev"]
 
   dbtest:
     image: mysql:8.0
@@ -24,8 +25,7 @@ services:
       MYSQL_DATABASE: tech_hive_test
     ports:
       - "3307:3306"
-    profiles:
-      - testing
+    profiles: ["testing"]
 
   app:
     build: .
@@ -35,8 +35,8 @@ services:
     environment:
       - DB_HOST=db
       - DB_PORT=3306
-      - DB_USER=gofiber
-      - DB_PASSWORD=gofiber123
+      - DB_USER=root
+      - DB_PASSWORD=root
       - DB_NAME=tech_hive
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -46,6 +46,8 @@ services:
       - MPESA_SHORTCODE=174379
       - MPESA_PASSKEY=your-mpesa-passkey
       - MPESA_CALLBACK_URL=http://localhost:9999/v1/api/mpesa/callback
+    env_file:
+      - .env
     depends_on:
       db:
         condition: service_healthy
@@ -53,6 +55,7 @@ services:
         condition: service_started
     volumes:
       - ./db/migrations:/app/db/migrations:ro
+    profiles: ["dev"]
 
   adminer:
     image: adminer
@@ -61,6 +64,7 @@ services:
       - "8080:8080"
     depends_on:
       - db
+    profiles: ["dev"]
 
   redis:
     image: bitnami/redis:latest
@@ -76,6 +80,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
+    profiles: ["dev"]
 
   redis-commander:
     image: rediscommander/redis-commander:latest
@@ -86,8 +91,7 @@ services:
       - "8081:8081"
     depends_on:
       - redis
-    profiles:
-      - tools
+    profiles: ["tools"]
 
   frontend:
     build:
@@ -104,8 +108,7 @@ services:
     volumes:
       - ./client:/app
       - /app/node_modules
-    profiles:
-      - frontend
+    profiles: ["dev"]
 
 volumes:
   mysql_data:

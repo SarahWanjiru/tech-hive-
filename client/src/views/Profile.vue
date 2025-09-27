@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { useAuthStore } from '../stores/auth.store.js'
+import { useAuthStore } from '../stores/auth.store.ts'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
