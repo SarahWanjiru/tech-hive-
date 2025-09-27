@@ -6,170 +6,22 @@
         <p>Track and manage your orders</p>
       </div>
 
-      <!-- Loading State -->
-      <div v-if="orderStore.loading" class="loading-container">
-        <el-icon class="loading"><Loading /></el-icon>
-        <p>Loading orders...</p>
-      </div>
-
-      <!-- Empty Orders -->
-      <div v-else-if="orderStore.orders.length === 0" class="empty-orders">
-        <el-empty description="No orders found">
-          <el-button type="primary" @click="$router.push('/products')">
-            Start Shopping
+      <!-- Orders functionality temporarily disabled -->
+      <div class="disabled-message">
+        <el-empty description="Orders functionality is currently being updated">
+          <el-button type="primary" @click="$router.push('/')">
+            Go to Home
           </el-button>
         </el-empty>
-      </div>
-
-      <!-- Orders List -->
-      <div v-else class="orders-list">
-        <div
-          v-for="order in orderStore.orders"
-          :key="order.id"
-          class="order-card"
-          @click="$router.push(`/orders/${order.id}`)"
-        >
-          <div class="order-header">
-            <div class="order-info">
-              <h4>Order #{{ order.id }}</h4>
-              <p class="order-date">{{ formatDate(order.created_at) }}</p>
-            </div>
-            <div class="order-status">
-              <el-tag :type="getStatusType(order.status)">
-                {{ getStatusText(order.status) }}
-              </el-tag>
-            </div>
-          </div>
-
-          <div class="order-items">
-            <div
-              v-for="item in order.items"
-              :key="item.id"
-              class="order-item"
-            >
-              <div class="item-image">
-                <img
-                  :src="item.image_url || '/placeholder-product.jpg'"
-                  :alt="item.name"
-                  @error="handleImageError"
-                />
-              </div>
-              <div class="item-details">
-                <h6>{{ item.name }}</h6>
-                <p>{{ item.description }}</p>
-                <div class="item-meta">
-                  <span>Qty: {{ item.quantity }}</span>
-                  <span>${{ item.price }} each</span>
-                </div>
-              </div>
-              <div class="item-total">
-                ${{ (item.price * item.quantity).toFixed(2) }}
-              </div>
-            </div>
-          </div>
-
-          <div class="order-footer">
-            <div class="order-total">
-              <span>Total: ${{ order.total_amount }}</span>
-            </div>
-            <div class="order-actions">
-              <el-button
-                v-if="order.status === 'pending'"
-                type="danger"
-                size="small"
-                @click.stop="cancelOrder(order.id)"
-              >
-                Cancel Order
-              </el-button>
-              <el-button size="small" @click.stop="$router.push(`/orders/${order.id}`)">
-                View Details
-              </el-button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
-import { useOrderStore } from '../stores/order.store.js'
-import { ElMessage } from 'element-plus'
-import { Loading } from '@element-plus/icons-vue'
+import { useAuthStore } from '../stores/auth.store.ts'
 
-const orderStore = useOrderStore()
-
-const loadOrders = async () => {
-  try {
-    await orderStore.fetchOrders()
-  } catch (error) {
-    console.error('Failed to load orders:', error)
-  }
-}
-
-const cancelOrder = async (orderId) => {
-  try {
-    await ElMessage.confirm(
-      'Are you sure you want to cancel this order?',
-      'Cancel Order',
-      {
-        confirmButtonText: 'Yes, Cancel',
-        cancelButtonText: 'No',
-        type: 'warning',
-      }
-    )
-
-    await orderStore.cancelOrder(orderId)
-    ElMessage.success('Order cancelled successfully!')
-
-    // Reload orders
-    loadOrders()
-  } catch (error) {
-    if (error !== 'cancel') {
-      ElMessage.error('Failed to cancel order')
-      console.error('Cancel order error:', error)
-    }
-  }
-}
-
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
-
-const getStatusType = (status) => {
-  const statusMap = {
-    'pending': 'warning',
-    'processing': 'info',
-    'completed': 'success',
-    'cancelled': 'danger'
-  }
-  return statusMap[status] || 'info'
-}
-
-const getStatusText = (status) => {
-  const statusMap = {
-    'pending': 'Pending',
-    'processing': 'Processing',
-    'completed': 'Completed',
-    'cancelled': 'Cancelled'
-  }
-  return statusMap[status] || 'Unknown'
-}
-
-const handleImageError = (event) => {
-  event.target.src = '/placeholder-product.jpg'
-}
-
-onMounted(() => {
-  loadOrders()
-})
+const authStore = useAuthStore()
 </script>
 
 <style scoped>

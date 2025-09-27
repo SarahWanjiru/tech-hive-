@@ -132,8 +132,8 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from './stores/auth.store.js'
-import { useCartStore } from './stores/cart.store.js'
+import { useAuthStore } from './stores/auth.store.ts'
+import { useCartStore } from './stores/cart.store.ts'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ShoppingCart, User, Document, SwitchButton } from '@element-plus/icons-vue'
 

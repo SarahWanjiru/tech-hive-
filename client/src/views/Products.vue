@@ -162,9 +162,9 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
-import { useProductStore } from '../stores/product.store.js'
-import { useCartStore } from '../stores/cart.store.js'
-import { useAuthStore } from '../stores/auth.store.js'
+import { useProductStore } from '../stores/product.store.ts'
+import { useCartStore } from '../stores/cart.store.ts'
+import { useAuthStore } from '../stores/auth.store.ts'
 import { ElMessage } from 'element-plus'
 import { Search, Loading } from '@element-plus/icons-vue'
 

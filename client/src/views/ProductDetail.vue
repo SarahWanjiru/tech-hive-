@@ -1,66 +1,11 @@
 <template>
   <div class="product-detail-page">
     <div class="container">
-      <!-- Loading State -->
-      <div v-if="productStore.loading" class="loading-container">
-        <el-icon class="loading"><Loading /></el-icon>
-        <p>Loading product details...</p>
-      </div>
-
-      <!-- Error State -->
-      <div v-else-if="productStore.error" class="error-container">
-        <p>{{ productStore.error }}</p>
-        <el-button type="primary" @click="loadProduct">Try Again</el-button>
-      </div>
-
-      <!-- Product Details -->
-      <div v-else-if="productStore.currentProduct" class="product-details">
-        <div class="product-gallery">
-          <div class="main-image">
-            <img
-              :src="productStore.currentProduct.image_url || '/placeholder-product.jpg'"
-              :alt="productStore.currentProduct.name"
-              @error="handleImageError"
-            />
-          </div>
-        </div>
-
-        <div class="product-info">
-          <h1 class="product-title">{{ productStore.currentProduct.name }}</h1>
-          <p class="product-description">{{ productStore.currentProduct.description }}</p>
-
-          <div class="product-meta">
-            <div class="product-price">
-              <span class="price">${{ productStore.currentProduct.price }}</span>
-              <span class="stock">Stock: {{ productStore.currentProduct.stock }}</span>
-            </div>
-          </div>
-
-          <div class="product-actions">
-            <el-input-number
-              v-model="quantity"
-              :min="1"
-              :max="productStore.currentProduct.stock"
-              size="large"
-            />
-
-            <el-button
-              type="primary"
-              size="large"
-              :disabled="productStore.currentProduct.stock === 0"
-              @click="addToCart"
-            >
-              {{ productStore.currentProduct.stock === 0 ? 'Out of Stock' : 'Add to Cart' }}
-            </el-button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Product Not Found -->
-      <div v-else class="not-found">
-        <el-empty description="Product not found">
-          <el-button type="primary" @click="$router.push('/products')">
-            Browse Products
+      <!-- Product detail functionality temporarily disabled -->
+      <div class="disabled-message">
+        <el-empty description="Product detail functionality is currently being updated">
+          <el-button type="primary" @click="$router.push('/')">
+            Go to Home
           </el-button>
         </el-empty>
       </div>
@@ -69,52 +14,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useProductStore } from '../stores/product.store.js'
-import { useCartStore } from '../stores/cart.store.js'
-import { useAuthStore } from '../stores/auth.store.js'
-import { ElMessage } from 'element-plus'
-import { Loading } from '@element-plus/icons-vue'
+import { useAuthStore } from '../stores/auth.store.ts'
 
 const route = useRoute()
 const router = useRouter()
-const productStore = useProductStore()
-const cartStore = useCartStore()
 const authStore = useAuthStore()
-
-const quantity = ref(1)
-
-const loadProduct = async () => {
-  try {
-    await productStore.fetchProductById(route.params.id)
-  } catch (error) {
-    console.error('Failed to load product:', error)
-  }
-}
-
-const addToCart = async () => {
-  if (!authStore.isAuthenticated) {
-    ElMessage.warning('Please login to add items to cart')
-    return
-  }
-
-  try {
-    await cartStore.addToCart(route.params.id, quantity.value)
-    ElMessage.success('Product added to cart!')
-  } catch (error) {
-    ElMessage.error('Failed to add product to cart')
-    console.error('Add to cart error:', error)
-  }
-}
-
-const handleImageError = (event) => {
-  event.target.src = '/placeholder-product.jpg'
-}
-
-onMounted(() => {
-  loadProduct()
-})
 </script>
 
 <style scoped>
