@@ -3,11 +3,11 @@ package impl
 import (
 	"context"
 	"errors"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/entity"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/exception"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/model"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/repository"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/service"
+	"strconv"
+	"github.com/tech-hive/ecommerce/entity"
+	"github.com/tech-hive/ecommerce/model"
+	"github.com/tech-hive/ecommerce/repository"
+	"github.com/tech-hive/ecommerce/service"
 	"gorm.io/gorm"
 )
 
@@ -52,7 +52,7 @@ func (cartService *cartServiceImpl) GetCart(ctx context.Context, userId uint) (m
 			Price:     item.Price,
 			CreatedAt: item.CreatedAt.String(),
 			Product: model.ProductModel{
-				Id:          item.Product.Id,
+				Id:          strconv.FormatUint(uint64(item.Product.Id), 10),
 				Name:        item.Product.Name,
 				Description: item.Product.Description,
 				Price:       item.Product.Price,
@@ -123,7 +123,7 @@ func (cartService *cartServiceImpl) AddToCart(ctx context.Context, userId uint, 
 			Price:     existingItem.Price,
 			CreatedAt: existingItem.CreatedAt.String(),
 			Product: model.ProductModel{
-				Id:          product.Id,
+				Id:          strconv.FormatUint(uint64(product.Id), 10),
 				Name:        product.Name,
 				Description: product.Description,
 				Price:       product.Price,
@@ -154,7 +154,7 @@ func (cartService *cartServiceImpl) AddToCart(ctx context.Context, userId uint, 
 		Price:     resultItem.Price,
 		CreatedAt: resultItem.CreatedAt.String(),
 		Product: model.ProductModel{
-			Id:          product.Id,
+			Id:          strconv.FormatUint(uint64(product.Id), 10),
 			Name:        product.Name,
 			Description: product.Description,
 			Price:       product.Price,
@@ -210,7 +210,7 @@ func (cartService *cartServiceImpl) UpdateCartItem(ctx context.Context, userId u
 		Price:     cartItem.Price,
 		CreatedAt: cartItem.CreatedAt.String(),
 		Product: model.ProductModel{
-			Id:          product.Id,
+			Id:          strconv.FormatUint(uint64(product.Id), 10),
 			Name:        product.Name,
 			Description: product.Description,
 			Price:       product.Price,

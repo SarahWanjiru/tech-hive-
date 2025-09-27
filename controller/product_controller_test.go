@@ -3,8 +3,8 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/configuration"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/model"
+	"github.com/tech-hive/ecommerce/configuration"
+	"github.com/tech-hive/ecommerce/model"
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 	"net/http/httptest"

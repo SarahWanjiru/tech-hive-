@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/configuration"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/exception"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/middleware"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/model"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/service"
+	"github.com/tech-hive/ecommerce/configuration"
+	"github.com/tech-hive/ecommerce/exception"
+	"github.com/tech-hive/ecommerce/middleware"
+	"github.com/tech-hive/ecommerce/model"
+	"github.com/tech-hive/ecommerce/service"
 	"github.com/gofiber/fiber/v2"
 )
 

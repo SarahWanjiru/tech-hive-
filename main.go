@@ -1,22 +1,22 @@
 package main
 
 import (
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/client/restclient"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/configuration"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/controller"
-	_ "github.com/RizkiMufrizal/gofiber-clean-architecture/docs"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/exception"
-	repository "github.com/RizkiMufrizal/gofiber-clean-architecture/repository/impl"
-	service "github.com/RizkiMufrizal/gofiber-clean-architecture/service/impl"
+	"github.com/tech-hive/ecommerce/client/restclient"
+	"github.com/tech-hive/ecommerce/configuration"
+	"github.com/tech-hive/ecommerce/controller"
+	_ "github.com/tech-hive/ecommerce/docs"
+	"github.com/tech-hive/ecommerce/exception"
+	repository "github.com/tech-hive/ecommerce/repository/impl"
+	service "github.com/tech-hive/ecommerce/service/impl"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/swagger"
 )
 
-// @title Go Fiber Clean Architecture
+// @title Tech Hive E-commerce
 // @version 1.0.0
-// @description Baseline project using Go Fiber
+// @description Tech Hive E-commerce application using Go Fiber
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
 // @contact.email fiber@swagger.io

@@ -1,4 +1,4 @@
-module github.com/RizkiMufrizal/gofiber-clean-architecture
+module github.com/tech-hive/ecommerce
 
 go 1.20
 

@@ -3,11 +3,13 @@ package impl
 import (
 	"context"
 	"errors"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/entity"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/exception"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/model"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/repository"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/service"
+	"strconv"
+	"github.com/tech-hive/ecommerce/entity"
+	"github.com/tech-hive/ecommerce/exception"
+	"github.com/tech-hive/ecommerce/model"
+	"github.com/tech-hive/ecommerce/repository"
+	"github.com/tech-hive/ecommerce/service"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -82,9 +84,14 @@ func (orderService *orderServiceImpl) CreateOrder(ctx context.Context, userId ui
 		}
 
 		// Create order item
+		productUUID, err := uuid.Parse(cartItem.ProductId)
+		if err != nil {
+			tx.Rollback()
+			return model.OrderModel{}, errors.New("invalid product ID format")
+		}
 		orderItem := entity.OrderItem{
 			OrderId:   order.Id,
-			ProductId: cartItem.ProductId,
+			ProductId: productUUID,
 			Quantity:  cartItem.Quantity,
 			Price:     cartItem.Price,
 		}
@@ -135,12 +142,12 @@ func (orderService *orderServiceImpl) GetOrderById(ctx context.Context, orderId 
 		orderItemModel := model.OrderItemModel{
 			Id:        item.Id,
 			OrderId:   item.OrderId,
-			ProductId: item.ProductId,
+			ProductId: item.ProductId.String(),
 			Quantity:  item.Quantity,
 			Price:     item.Price,
 			CreatedAt: item.CreatedAt.String(),
 			Product: model.ProductModel{
-				Id:          item.Product.Id,
+				Id:          strconv.FormatUint(uint64(item.Product.Id), 10),
 				Name:        item.Product.Name,
 				Description: item.Product.Description,
 				Price:       item.Product.Price,
@@ -191,12 +198,12 @@ func (orderService *orderServiceImpl) GetOrdersByUserId(ctx context.Context, use
 			orderItemModel := model.OrderItemModel{
 				Id:        item.Id,
 				OrderId:   item.OrderId,
-				ProductId: item.ProductId,
+				ProductId: item.ProductId.String(),
 				Quantity:  item.Quantity,
 				Price:     item.Price,
 				CreatedAt: item.CreatedAt.String(),
 				Product: model.ProductModel{
-					Id:          item.Product.Id,
+					Id:          strconv.FormatUint(uint64(item.Product.Id), 10),
 					Name:        item.Product.Name,
 					Description: item.Product.Description,
 					Price:       item.Product.Price,
@@ -237,7 +244,7 @@ func (orderService *orderServiceImpl) GetOrdersByUserId(ctx context.Context, use
 
 func (orderService *orderServiceImpl) UpdateOrderStatus(ctx context.Context, orderId uint, request model.UpdateOrderStatusModel) (model.OrderModel, error) {
 	// Get order first to check ownership
-	order, err := orderService.OrderRepository.GetOrderById(ctx, orderId)
+	_, err := orderService.OrderRepository.GetOrderById(ctx, orderId)
 	if err != nil {
 		return model.OrderModel{}, err
 	}
@@ -254,12 +261,12 @@ func (orderService *orderServiceImpl) UpdateOrderStatus(ctx context.Context, ord
 		orderItemModel := model.OrderItemModel{
 			Id:        item.Id,
 			OrderId:   item.OrderId,
-			ProductId: item.ProductId,
+			ProductId: item.ProductId.String(),
 			Quantity:  item.Quantity,
 			Price:     item.Price,
 			CreatedAt: item.CreatedAt.String(),
 			Product: model.ProductModel{
-				Id:          item.Product.Id,
+				Id:          strconv.FormatUint(uint64(item.Product.Id), 10),
 				Name:        item.Product.Name,
 				Description: item.Product.Description,
 				Price:       item.Product.Price,

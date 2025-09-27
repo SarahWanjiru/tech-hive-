@@ -1,8 +1,6 @@
-# Go Fiber Clean Architecture Mini-Ecommerce Application
+ Tech Hive E-commerce Application
 
 A comprehensive mini-ecommerce backend application built with Go Fiber using clean architecture principles, featuring user authentication, product management, shopping cart, order processing, and M-Pesa payment simulation.
-
-## 🚀 Features
 
 ### Core Features
 - **User Authentication & Authorization**: JWT-based authentication with role-based access control
@@ -46,7 +44,7 @@ A comprehensive mini-ecommerce backend application built with Go Fiber using cle
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd gofiber-clean-architecture
+   cd tech-hive
    ```
 
 2. **Start all services**
@@ -56,7 +54,7 @@ A comprehensive mini-ecommerce backend application built with Go Fiber using cle
 
 3. **Run database migrations**
    ```bash
-   docker compose exec app migrate -database "mysql://gofiber:gofiber123@tcp(db:3306)/gofiber_clean_architecture" -path db/migrations up
+   docker compose exec app migrate -database "mysql://gofiber:gofiber123@tcp(db:3306)/tech_hive" -path db/migrations up
    ```
 
 4. **Seed sample data (optional)**
@@ -94,7 +92,7 @@ A comprehensive mini-ecommerce backend application built with Go Fiber using cle
 
 4. **Run migrations**
    ```bash
-   migrate -database "mysql://root:root@tcp(localhost:3306)/gofiber_clean_architecture" -path db/migrations up
+   migrate -database "mysql://root:root@tcp(localhost:3306)/tech_hive" -path db/migrations up
    ```
 
 5. **Run the application**
@@ -283,7 +281,7 @@ DB_HOST=localhost
 DB_PORT=3306
 DB_USER=gofiber
 DB_PASSWORD=gofiber123
-DB_NAME=gofiber_clean_architecture
+DB_NAME=tech_hive
 
 # Redis
 REDIS_HOST=localhost

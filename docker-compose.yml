@@ -4,7 +4,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: gofiber_clean_architecture
+      MYSQL_DATABASE: tech_hive
       MYSQL_USER: gofiber
       MYSQL_PASSWORD: gofiber123
     ports:
@@ -21,7 +21,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: gofiber_clean_architecture_test
+      MYSQL_DATABASE: tech_hive_test
     ports:
       - "3307:3306"
     profiles:
@@ -37,7 +37,7 @@ services:
       - DB_PORT=3306
       - DB_USER=gofiber
       - DB_PASSWORD=gofiber123
-      - DB_NAME=gofiber_clean_architecture
+      - DB_NAME=tech_hive
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - JWT_SECRET_KEY=your-super-secret-jwt-key-change-this-in-production

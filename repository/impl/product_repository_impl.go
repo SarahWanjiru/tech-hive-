@@ -3,10 +3,10 @@ package impl
 import (
  	"context"
  	"errors"
- 	"github.com/RizkiMufrizal/gofiber-clean-architecture/entity"
- 	"github.com/RizkiMufrizal/gofiber-clean-architecture/exception"
- 	"github.com/RizkiMufrizal/gofiber-clean-architecture/model"
- 	"github.com/RizkiMufrizal/gofiber-clean-architecture/repository"
+ 	"github.com/tech-hive/ecommerce/entity"
+ 	"github.com/tech-hive/ecommerce/exception"
+ 	"github.com/tech-hive/ecommerce/model"
+ 	"github.com/tech-hive/ecommerce/repository"
  	"github.com/google/uuid"
  	"gorm.io/gorm"
  )
@@ -20,11 +20,11 @@ type productRepositoryImpl struct {
 }
 
 func (repository *productRepositoryImpl) Insert(ctx context.Context, product entity.Product) entity.Product {
-	product.Id = uuid.New()
-	err := repository.DB.WithContext(ctx).Create(&product).Error
-	exception.PanicLogging(err)
-	return product
-}
+ 	product.ProductId = uuid.New()
+ 	err := repository.DB.WithContext(ctx).Create(&product).Error
+ 	exception.PanicLogging(err)
+ 	return product
+ }
 
 func (repository *productRepositoryImpl) Update(ctx context.Context, product entity.Product) entity.Product {
 	err := repository.DB.WithContext(ctx).Where("product_id = ?", product.Id).Updates(&product).Error

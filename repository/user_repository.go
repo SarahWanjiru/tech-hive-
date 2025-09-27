@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/entity"
+	"github.com/tech-hive/ecommerce/entity"
 )
 
 type UserRepository interface {

@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import type { Component } from 'vue'
 
 // Import App component
 import App from './App.vue'
@@ -15,7 +16,6 @@ import router from './router/index'
 
 // Import stores
 import { useAuthStore } from './stores/auth.store'
-import type { Component } from 'vue'
 
 const app = createApp(App)
 const pinia = createPinia()

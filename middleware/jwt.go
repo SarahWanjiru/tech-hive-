@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/common"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/configuration"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/model"
+	"github.com/tech-hive/ecommerce/common"
+	"github.com/tech-hive/ecommerce/configuration"
+	"github.com/tech-hive/ecommerce/model"
 	"github.com/gofiber/fiber/v2"
 	jwtware "github.com/gofiber/jwt/v3"
 	"github.com/golang-jwt/jwt/v4"

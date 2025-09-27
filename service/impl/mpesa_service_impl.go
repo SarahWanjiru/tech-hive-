@@ -1,7 +1,6 @@
 package impl
 
 import (
-	"bytes"
 	"context"
 	"crypto/rand"
 	"crypto/sha256"
@@ -9,11 +8,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/configuration"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/entity"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/model"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/repository"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/service"
+	"github.com/tech-hive/ecommerce/configuration"
+	"github.com/tech-hive/ecommerce/entity"
+	"github.com/tech-hive/ecommerce/model"
+	"github.com/tech-hive/ecommerce/repository"
+	"github.com/tech-hive/ecommerce/service"
 	"gorm.io/gorm"
 	"io"
 	"math/big"
@@ -49,24 +48,24 @@ func (mpesaService *mpesaServiceImpl) InitiateSTKPush(ctx context.Context, reque
 		return model.MpesaPaymentResponse{}, errors.New("order is already paid")
 	}
 
-	// Generate M-Pesa request
-	timestamp := mpesaService.GenerateTimestamp()
-	password := mpesaService.GeneratePassword()
+	// Generate M-Pesa request (for reference, actual request is simulated)
+	// timestamp := mpesaService.GenerateTimestamp()
+	// password := mpesaService.GeneratePassword()
 
-	// Create STK push request
-	stkPushRequest := model.MpesaSTKPushRequest{
-		BusinessShortCode: mpesaService.Config.Get("MPESA_SHORTCODE"),
-		Password:          password,
-		Timestamp:         timestamp,
-		TransactionType:   "CustomerPayBillOnline",
-		Amount:            request.Amount,
-		PartyA:            request.PhoneNumber,
-		PartyB:            mpesaService.Config.Get("MPESA_SHORTCODE"),
-		PhoneNumber:       request.PhoneNumber,
-		CallBackURL:       mpesaService.Config.Get("MPESA_CALLBACK_URL"),
-		AccountReference:  fmt.Sprintf("Order #%d", request.OrderId),
-		TransactionDesc:   "Payment for order",
-	}
+	// Create STK push request (for reference, actual request is simulated)
+	// stkPushRequest := model.MpesaSTKPushRequest{
+	//     BusinessShortCode: mpesaService.Config.Get("MPESA_SHORTCODE"),
+	//     Password:          password,
+	//     Timestamp:         timestamp,
+	//     TransactionType:   "CustomerPayBillOnline",
+	//     Amount:            request.Amount,
+	//     PartyA:            request.PhoneNumber,
+	//     PartyB:            mpesaService.Config.Get("MPESA_SHORTCODE"),
+	//     PhoneNumber:       request.PhoneNumber,
+	//     CallBackURL:       mpesaService.Config.Get("MPESA_CALLBACK_URL"),
+	//     AccountReference:  fmt.Sprintf("Order #%d", request.OrderId),
+	//     TransactionDesc:   "Payment for order",
+	// }
 
 	// Simulate M-Pesa API call
 	// In a real implementation, you would make an HTTP request to M-Pesa API
@@ -196,8 +195,8 @@ func generateRandomString(length int) string {
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	b := make([]byte, length)
 	for i := range b {
-		n, _ := rand.Read([]byte{0})
-		b[i] = charset[n[0]%byte(len(charset))]
+		_, _ = rand.Read(b[i:i+1])
+		b[i] = charset[int(b[i])%len(charset)]
 	}
 	return string(b)
 }

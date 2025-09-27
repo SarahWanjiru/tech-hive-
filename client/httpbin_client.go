@@ -2,7 +2,7 @@ package client
 
 import (
 	"context"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/model"
+	"github.com/tech-hive/ecommerce/model"
 )
 
 type HttpBinClient interface {

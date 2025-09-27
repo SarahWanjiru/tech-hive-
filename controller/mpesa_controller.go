@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/configuration"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/exception"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/middleware"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/model"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/service"
+	"github.com/tech-hive/ecommerce/configuration"
+	"github.com/tech-hive/ecommerce/exception"
+	"github.com/tech-hive/ecommerce/middleware"
+	"github.com/tech-hive/ecommerce/model"
+	"github.com/tech-hive/ecommerce/service"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -44,18 +44,27 @@ func (controller MpesaController) InitiateSTKPush(c *fiber.Ctx) error {
 	user := c.Locals("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	userIdFloat := claims["user_id"].(float64)
-	userId := uint(userIdFloat)
+	_ = uint(userIdFloat) // TODO: Use this for order verification when order service is available
 
 	// Verify order belongs to user (we'll need to add a method to check order ownership)
 	// For now, we'll assume the order exists and proceed
+	// TODO: Add order verification logic here
+	// order, err := controller.MpesaService.GetOrderById(c.Context(), request.OrderId)
+	// if err != nil {
+	//     return c.Status(fiber.StatusNotFound).JSON(model.GeneralResponse{
+	//         Code:    404,
+	//         Message: "Order not found",
+	//         Data:    err.Error(),
+	//     })
+	// }
 
-	if order.UserId != userId {
-		return c.Status(fiber.StatusForbidden).JSON(model.GeneralResponse{
-			Code:    403,
-			Message: "Forbidden",
-			Data:    "You don't have permission to pay for this order",
-		})
-	}
+	// if order.UserId != userId {
+	//     return c.Status(fiber.StatusForbidden).JSON(model.GeneralResponse{
+	//         Code:    403,
+	//         Message: "Forbidden",
+	//         Data:    "You don't have permission to pay for this order",
+	//     })
+	// }
 
 	response, err := controller.MpesaService.InitiateSTKPush(c.Context(), request)
 	if err != nil {

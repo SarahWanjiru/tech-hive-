@@ -2,10 +2,10 @@ package restclient
 
 import (
 	"context"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/client"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/common"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/exception"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/model"
+	"github.com/tech-hive/ecommerce/client"
+	"github.com/tech-hive/ecommerce/common"
+	"github.com/tech-hive/ecommerce/exception"
+	"github.com/tech-hive/ecommerce/model"
 )
 
 func NewHttpBinRestClient() client.HttpBinClient {

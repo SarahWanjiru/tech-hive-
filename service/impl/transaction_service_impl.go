@@ -2,12 +2,12 @@ package impl
 
 import (
 	"context"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/common"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/entity"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/exception"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/model"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/repository"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/service"
+	"github.com/tech-hive/ecommerce/common"
+	"github.com/tech-hive/ecommerce/entity"
+	"github.com/tech-hive/ecommerce/exception"
+	"github.com/tech-hive/ecommerce/model"
+	"github.com/tech-hive/ecommerce/repository"
+	"github.com/tech-hive/ecommerce/service"
 	"github.com/google/uuid"
 )
 

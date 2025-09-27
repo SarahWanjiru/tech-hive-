@@ -2,9 +2,9 @@ package impl
 
 import (
 	"context"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/entity"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/repository"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/service"
+	"github.com/tech-hive/ecommerce/entity"
+	"github.com/tech-hive/ecommerce/repository"
+	"github.com/tech-hive/ecommerce/service"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"

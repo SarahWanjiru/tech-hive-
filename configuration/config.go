@@ -1,7 +1,7 @@
 package configuration
 
 import (
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/exception"
+	"github.com/tech-hive/ecommerce/exception"
 	"github.com/joho/godotenv"
 	"os"
 )

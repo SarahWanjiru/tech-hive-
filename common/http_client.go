@@ -5,7 +5,7 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/exception"
+	"github.com/tech-hive/ecommerce/exception"
 	"io"
 	"math/rand"
 	"net"

@@ -2,8 +2,8 @@ package repository
 
 import (
  	"context"
- 	"github.com/RizkiMufrizal/gofiber-clean-architecture/entity"
- 	"github.com/RizkiMufrizal/gofiber-clean-architecture/model"
+ 	"github.com/tech-hive/ecommerce/entity"
+ 	"github.com/tech-hive/ecommerce/model"
  )
 
 type ProductRepository interface {

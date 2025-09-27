@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/model"
-	"github.com/RizkiMufrizal/gofiber-clean-architecture/service"
+	"github.com/tech-hive/ecommerce/model"
+	"github.com/tech-hive/ecommerce/service"
 	"github.com/gofiber/fiber/v2"
 )
 
