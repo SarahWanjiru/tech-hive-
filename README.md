@@ -519,18 +519,3 @@ curl -X POST http://localhost:9999/v1/api/product \
 4. **Redis connection failed**
    - Ensure Redis container is running
    - Check Redis host and port configuration
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- Go Fiber team for the excellent web framework
-- GORM team for the powerful ORM
-- Docker team for containerization
-- All contributors and open source community
-
----
-
-For more information, visit the [API Documentation](http://localhost:9999/swagger/) once the application is running.
