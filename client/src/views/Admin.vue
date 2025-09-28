@@ -41,7 +41,7 @@
               <el-icon><Money /></el-icon>
             </div>
             <div class="stat-info">
-              <h3>${{ stats.totalRevenue.toFixed(2) }}</h3>
+              <h3>KSh {{ stats.totalRevenue.toFixed(2) }}</h3>
               <p>Total Revenue</p>
             </div>
           </div>
@@ -98,7 +98,7 @@
 
             <el-table-column prop="price" label="Price" width="120">
               <template #default="scope">
-                ${{ scope.row.price }}
+                KSh {{ scope.row.price }}
               </template>
             </el-table-column>
 
@@ -144,7 +144,7 @@
 
               <div class="order-meta">
                 <span>{{ formatDate(order.created_at) }}</span>
-                <span class="order-total">${{ order.total.toFixed(2) }}</span>
+                <span class="order-total">KSh {{ order.total.toFixed(2) }}</span>
               </div>
 
               <div class="order-status">

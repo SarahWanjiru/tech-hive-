@@ -64,19 +64,19 @@
                 <p>{{ item.product.description }}</p>
                 <div class="item-meta">
                   <span>Qty: {{ item.quantity }}</span>
-                  <span>${{ item.product.price }}</span>
+                  <span>KSh {{ item.product.price }}</span>
                 </div>
               </div>
 
               <div class="item-total">
-                ${{ (item.product.price * item.quantity).toFixed(2) }}
+                KSh {{ (item.product.price * item.quantity).toFixed(2) }}
               </div>
             </div>
           </div>
 
           <div class="order-footer">
             <div class="order-total">
-              Total: ${{ order.total.toFixed(2) }}
+              Total: KSh {{ order.total.toFixed(2) }}
             </div>
 
             <div class="order-actions">

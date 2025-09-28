@@ -46,12 +46,12 @@
                 <p>{{ item.product.description }}</p>
                 <div class="item-meta">
                   <span>Qty: {{ item.quantity }}</span>
-                  <span>${{ item.product.price }}</span>
+                  <span>KSh {{ item.product.price }}</span>
                 </div>
               </div>
 
               <div class="item-total">
-                ${{ (item.product.price * item.quantity).toFixed(2) }}
+                KSh {{ (item.product.price * item.quantity).toFixed(2) }}
               </div>
             </div>
           </div>
@@ -59,7 +59,7 @@
           <div class="order-totals">
             <div class="total-row">
               <span>Subtotal</span>
-              <span>${{ cartStore.totalAmount.toFixed(2) }}</span>
+              <span>KSh {{ cartStore.totalAmount.toFixed(2) }}</span>
             </div>
             <div class="total-row">
               <span>Shipping</span>
@@ -67,11 +67,11 @@
             </div>
             <div class="total-row">
               <span>Tax</span>
-              <span>${{ (cartStore.totalAmount * 0.1).toFixed(2) }}</span>
+              <span>KSh {{ (cartStore.totalAmount * 0.1).toFixed(2) }}</span>
             </div>
             <div class="total-row final-total">
               <span>Total</span>
-              <span>${{ (cartStore.totalAmount * 1.1).toFixed(2) }}</span>
+              <span>KSh {{ (cartStore.totalAmount * 1.1).toFixed(2) }}</span>
             </div>
           </div>
         </div>

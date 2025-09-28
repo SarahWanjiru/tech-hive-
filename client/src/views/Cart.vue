@@ -40,7 +40,7 @@
             <div class="item-info">
               <h4 class="item-name">{{ item.product.name }}</h4>
               <p class="item-description">{{ item.product.description }}</p>
-              <p class="item-price">${{ item.product.price }}</p>
+              <p class="item-price">KSh {{ item.product.price }}</p>
             </div>
 
             <div class="item-quantity">
@@ -53,7 +53,7 @@
             </div>
 
             <div class="item-total">
-              <p class="total-price">${{ (item.product.price * item.quantity).toFixed(2) }}</p>
+              <p class="total-price">KSh {{ (item.product.price * item.quantity).toFixed(2) }}</p>
               <el-button
                 type="danger"
                 text
@@ -72,7 +72,7 @@
           <div class="summary-details">
             <div class="summary-row">
               <span>Subtotal ({{ cartStore.totalItems }} items)</span>
-              <span>${{ cartStore.totalAmount.toFixed(2) }}</span>
+              <span>KSh {{ cartStore.totalAmount.toFixed(2) }}</span>
             </div>
             <div class="summary-row">
               <span>Shipping</span>
@@ -80,11 +80,11 @@
             </div>
             <div class="summary-row">
               <span>Tax</span>
-              <span>${{ (cartStore.totalAmount * 0.1).toFixed(2) }}</span>
+              <span>KSh {{ (cartStore.totalAmount * 0.1).toFixed(2) }}</span>
             </div>
             <div class="summary-row total">
               <span>Total</span>
-              <span>${{ (cartStore.totalAmount * 1.1).toFixed(2) }}</span>
+              <span>KSh {{ (cartStore.totalAmount * 1.1).toFixed(2) }}</span>
             </div>
           </div>
 

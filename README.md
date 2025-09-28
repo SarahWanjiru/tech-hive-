@@ -1,6 +1,6 @@
  Tech Hive E-commerce Application
 
-A comprehensive mini-ecommerce backend application built with Go Fiber using clean architecture principles, featuring user authentication, product management, shopping cart, order processing, and M-Pesa payment simulation.
+A comprehensive mini-ecommerce application built with Go Fiber backend and Vue.js frontend using clean architecture principles, featuring user authentication, product management, shopping cart, order processing, and M-Pesa payment integration with Kenyan Shillings (KSh) currency support.
 
 ### Core Features
 - **User Authentication & Authorization**: JWT-based authentication with role-based access control
@@ -23,6 +23,7 @@ A comprehensive mini-ecommerce backend application built with Go Fiber using cle
 ## 🛠 Technology Stack
 
 - **Backend**: Go 1.21, Go Fiber
+- **Frontend**: Vue.js 3, TypeScript, Pinia
 - **Database**: MySQL 8.0
 - **Cache**: Redis
 - **ORM**: GORM
@@ -35,6 +36,7 @@ A comprehensive mini-ecommerce backend application built with Go Fiber using cle
 
 - Docker and Docker Compose
 - Go 1.21+ (for local development)
+- Node.js 18+ and npm (for frontend development)
 - Git
 
 ## 🚀 Quick Start
@@ -67,6 +69,7 @@ A comprehensive mini-ecommerce backend application built with Go Fiber using cle
    ```
 
 5. **Access the application**
+   - Frontend: http://localhost:3000
    - API: http://localhost:9999
    - API Documentation: http://localhost:9999/swagger/
    - Database Admin: http://localhost:8080 (Adminer)
@@ -96,9 +99,35 @@ A comprehensive mini-ecommerce backend application built with Go Fiber using cle
    ```
 
 5. **Run the application**
-   ```bash
-   go run main.go
-   ```
+    ```bash
+    go run main.go
+    ```
+
+ ### Frontend Development Setup
+
+ 1. **Install frontend dependencies**
+    ```bash
+    cd client
+    npm install
+    ```
+
+ 2. **Start development server**
+    ```bash
+    cd client
+    npm run dev
+    ```
+
+ 3. **Build for production**
+    ```bash
+    cd client
+    npm run build
+    ```
+
+ 4. **Preview production build**
+    ```bash
+    cd client
+    npm run preview
+    ```
 
 ## 📚 API Documentation
 
@@ -306,14 +335,14 @@ curl -X POST http://localhost:9999/v1/api/seed/products
   - Role: Customer (shopping access)
 
 #### Products (8 Sample Items)
-- **iPhone 15 Pro** - $999.99 (50 in stock)
-- **Samsung Galaxy S24** - $899.99 (30 in stock)
-- **MacBook Pro 16-inch** - $2499.99 (20 in stock)
-- **Dell XPS 13** - $1299.99 (25 in stock)
-- **Sony WH-1000XM5** - $399.99 (100 in stock)
-- **iPad Air** - $599.99 (40 in stock)
-- **Nintendo Switch OLED** - $349.99 (60 in stock)
-- **Apple Watch Series 9** - $399.99 (80 in stock)
+ - **iPhone 15 Pro** - KSh 999.99 (50 in stock)
+ - **Samsung Galaxy S24** - KSh 899.99 (30 in stock)
+ - **MacBook Pro 16-inch** - KSh 2499.99 (20 in stock)
+ - **Dell XPS 13** - KSh 1299.99 (25 in stock)
+ - **Sony WH-1000XM5** - KSh 399.99 (100 in stock)
+ - **iPad Air** - KSh 599.99 (40 in stock)
+ - **Nintendo Switch OLED** - KSh 349.99 (60 in stock)
+ - **Apple Watch Series 9** - KSh 399.99 (80 in stock)
 
 ## 🔧 Configuration
 
@@ -356,6 +385,21 @@ MPESA_CALLBACK_URL=http://localhost:9999/v1/api/mpesa/callback
 
 ```
 ├── client/                 # Frontend application (Vue.js)
+│   ├── public/            # Static assets
+│   ├── src/
+│   │   ├── api/          # API client configuration
+│   │   ├── assets/       # Images, styles, icons
+│   │   ├── components/   # Reusable Vue components
+│   │   ├── composables/  # Vue composables
+│   │   ├── middleware/   # Route guards
+│   │   ├── router/       # Vue router configuration
+│   │   ├── services/     # API service layer
+│   │   ├── stores/       # Pinia state management
+│   │   ├── types/        # TypeScript type definitions
+│   │   ├── utils/        # Utility functions
+│   │   └── views/        # Vue pages/views
+│   ├── Dockerfile        # Frontend container config
+│   └── package.json      # Frontend dependencies
 ├── common/                 # Shared utilities
 ├── configuration/          # Configuration management
 ├── controller/             # HTTP controllers
