@@ -182,15 +182,15 @@ definitions:
     type: object
   model.UserModel:
     properties:
+      email:
+        example: user@example.com
+        type: string
       password:
         example: password123
         type: string
-      username:
-        example: user@example.com
-        type: string
     required:
+    - email
     - password
-    - username
     type: object
   model.UserRegistrationModel:
     properties:

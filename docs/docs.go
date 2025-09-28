@@ -1255,17 +1255,17 @@ const docTemplate = `{
         "model.UserModel": {
             "type": "object",
             "required": [
-                "password",
-                "username"
+                "email",
+                "password"
             ],
             "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "user@example.com"
+                },
                 "password": {
                     "type": "string",
                     "example": "password123"
-                },
-                "username": {
-                    "type": "string",
-                    "example": "user@example.com"
                 }
             }
         },

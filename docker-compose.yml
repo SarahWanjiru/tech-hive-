@@ -5,8 +5,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: tech_hive
-      MYSQL_USER: gofiber
-      MYSQL_PASSWORD: gofiber123
     ports:
       - "3306:3306"
     volumes:
@@ -15,56 +13,27 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
       retries: 10
-    profiles: ["dev"]
-
-  dbtest:
-    image: mysql:8.0
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: tech_hive_test
-    ports:
-      - "3307:3306"
-    profiles: ["testing"]
 
   app:
     build: .
     restart: always
     ports:
       - "9999:9999"
-    environment:
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_USER=root
-      - DB_PASSWORD=root
-      - DB_NAME=tech_hive
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - JWT_SECRET_KEY=your-super-secret-jwt-key-change-this-in-production
-      - JWT_EXPIRE_MINUTES_COUNT=60
-      - SERVER_PORT=9999
-      - MPESA_SHORTCODE=174379
-      - MPESA_PASSKEY=your-mpesa-passkey
-      - MPESA_CALLBACK_URL=http://localhost:9999/v1/api/mpesa/callback
     env_file:
       - .env
     depends_on:
       db:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
     volumes:
       - ./db/migrations:/app/db/migrations:ro
-    profiles: ["dev"]
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
-    profiles: ["dev"]
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9999/v1/api/product"]
+      interval: 30s
+      retries: 3
+      start_period: 40s
+      timeout: 10s
 
   redis:
     image: bitnami/redis:latest
@@ -80,35 +49,24 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
-    profiles: ["dev"]
 
-  redis-commander:
-    image: rediscommander/redis-commander:latest
-    restart: always
-    environment:
-      - REDIS_HOSTS=local:redis:6379
-    ports:
-      - "8081:8081"
-    depends_on:
-      - redis
-    profiles: ["tools"]
-
-  frontend:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
+  client:
+    build: ./client
     restart: always
     ports:
-      - "3000:3000"
-    environment:
-      - VITE_API_BASE_URL=http://localhost:9999
-      - NODE_ENV=development
+      - "3000:80"
     depends_on:
       - app
-    volumes:
-      - ./client:/app
-      - /app/node_modules
-    profiles: ["dev"]
+    environment:
+      - VUE_APP_API_BASE_URL=http://localhost:9999
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
 
 volumes:
   mysql_data:

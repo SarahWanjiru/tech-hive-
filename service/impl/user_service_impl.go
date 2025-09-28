@@ -19,7 +19,7 @@ type userServiceImpl struct {
 }
 
 func (userService *userServiceImpl) Authentication(ctx context.Context, model model.UserModel) entity.User {
- 	userResult, err := userService.UserRepository.Authentication(ctx, model.Username)
+  	userResult, err := userService.UserRepository.Authentication(ctx, model.Email)
  	if err != nil {
  		panic(exception.UnauthorizedError{
  			Message: err.Error(),

@@ -16,11 +16,11 @@ export const authService = {
         role: userData.role || 'customer'
       })
 
-      if (response.data?.token) {
-        this.setAuthData(response.data)
+      if (response.data?.data?.token) {
+        this.setAuthData(response.data.data)
       }
 
-      return response
+      return response.data
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Registration failed')
     }
@@ -34,15 +34,15 @@ export const authService = {
   async login(credentials: LoginRequest): Promise<GeneralResponse> {
     try {
       const response = await apiClient.post<GeneralResponse>('/v1/api/authentication', {
-        username: credentials.email, // Backend expects email in username field
+        email: credentials.email,
         password: credentials.password
       })
 
-      if (response.data?.token) {
-        this.setAuthData(response.data)
+      if (response.data?.data?.token) {
+        this.setAuthData(response.data.data)
       }
 
-      return response
+      return response.data
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Login failed')
     }
@@ -62,8 +62,14 @@ export const authService = {
    * @returns User data or null
    */
   getCurrentUser(): User | null {
-    const userData = localStorage.getItem('user_data')
-    return userData ? JSON.parse(userData) : null
+    try {
+      const userData = localStorage.getItem('user_data')
+      return userData && userData !== 'undefined' ? JSON.parse(userData) : null
+    } catch (error) {
+      console.error('Error parsing user data:', error)
+      localStorage.removeItem('user_data')
+      return null
+    }
   },
 
   /**

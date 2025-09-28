@@ -1,3 +1,11 @@
 .idea
 *.iml
 logs/
+.env
+node_modules/
+dist/
+.DS_Store
+npm-debug.log*
+yarn-error.log*
+coverage/   
+.env.test
