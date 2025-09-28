@@ -72,7 +72,7 @@ func main() {
 	app := fiber.New(configuration.NewFiberConfiguration())
 	app.Use(recover.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:3000, http://127.0.0.1:3000, http://localhost:9999",
+		AllowOrigins: "http://localhost:3000, http://127.0.0.1:3000, http://localhost:9999, http://app:9999",
 		AllowMethods: "GET,POST,PUT,DELETE,OPTIONS",
 		AllowHeaders: "Origin,Content-Type,Accept,Authorization",
 		AllowCredentials: true,
@@ -91,6 +91,14 @@ func main() {
 
 	//swagger
 	app.Get("/swagger/*", swagger.HandlerDefault)
+
+	//health check
+	app.Get("/api/health", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"status": "ok",
+			"service": "mini-ecommerce-api",
+		})
+	})
 
 	//start app
 	err := app.Listen(config.Get("SERVER.PORT"))

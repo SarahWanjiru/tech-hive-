@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { cartService } from '../services/cart.service'
-import type { Cart, CartItem, AddToCartModel } from '../types/api'
+import type { Cart, CartItem } from '../types/api'
 
 interface CartState {
   cart: Cart | null
@@ -20,21 +20,21 @@ export const useCartStore = defineStore('cart', {
     items: (state: CartState): CartItem[] => state.cart?.items || [],
 
     // Check if cart is empty
-    isEmpty: (state: CartState): boolean => !state.cart || state.cart.items.length === 0,
+    isEmpty: (state: CartState): boolean => !state.cart || !state.cart.items || state.cart.items.length === 0,
 
     // Get total number of items
     totalItems: (state: CartState): number => {
-      return state.cart?.items.reduce((total, item) => total + item.quantity, 0) || 0
+      return state.cart?.items?.reduce((total, item) => total + item.quantity, 0) || 0
     },
 
     // Get total amount
     totalAmount: (state: CartState): number => {
-      return state.cart?.items.reduce((total, item) => total + (item.price * item.quantity), 0) || 0
+      return state.cart?.items?.reduce((total, item) => total + (item.price * item.quantity), 0) || 0
     },
 
     // Get item by product ID
     getItemByProductId: (state: CartState) => (productId: string): CartItem | undefined => {
-      return state.cart?.items.find(item => item.product_id === productId)
+      return state.cart?.items?.find(item => item.product_id === productId)
     }
   },
 
@@ -72,8 +72,13 @@ export const useCartStore = defineStore('cart', {
       try {
         const response = await cartService.addToCart(productId, quantity)
 
+        // Ensure cart exists, fetch if necessary
+        if (!this.cart) {
+          await this.fetchCart()
+        }
+
         // Update or add item in cart
-        if (this.cart) {
+        if (this.cart && this.cart.items) {
           const existingItemIndex = this.cart.items.findIndex(item => item.product_id === productId)
           if (existingItemIndex !== -1) {
             // Update existing item quantity
@@ -172,11 +177,14 @@ export const useCartStore = defineStore('cart', {
      */
     async getCartCount(): Promise<number> {
       try {
-        const response = await cartService.getCartCount()
-        return response.data
+        // Fetch cart to get current count
+        if (!this.cart) {
+          await this.fetchCart()
+        }
+        return this.totalItems
       } catch (error) {
         console.error('Failed to get cart count:', error)
-        return this.totalItems
+        return 0
       }
     },
 

@@ -29,11 +29,31 @@ apiClient.interceptors.response.use(
     return response
   },
   (error: AxiosError) => {
+    console.log('API Error:', {
+      status: error.response?.status,
+      url: error.config?.url,
+      message: error.message
+    })
+
     if (error.response?.status === 401) {
-      // Token expired or invalid, redirect to login
-      localStorage.removeItem('auth_token')
-      localStorage.removeItem('user_data')
-      window.location.href = '/login'
+      // Only clear auth data and redirect if it's not an authentication endpoint
+      // This prevents clearing auth data during login attempts
+      const url = error.config?.url || ''
+      if (!url.includes('/authentication') && !url.includes('/users')) {
+        console.log('401 Unauthorized on protected endpoint - clearing auth data and redirecting to login')
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('user_data')
+        window.location.href = '/login'
+      } else {
+        console.log('401 Unauthorized on auth endpoint - not clearing auth data')
+      }
+    }
+
+    // Special handling for network errors that might be caused by CORS or server issues
+    if (!error.response && error.message.includes('Network Error')) {
+      console.log('Network error detected - not clearing auth data')
+      // Don't clear auth data for network errors
+      throw new Error('Network error - please check your connection or try refreshing the page')
     }
 
     // Handle network errors

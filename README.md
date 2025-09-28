@@ -267,10 +267,53 @@ go test ./controller/...
 ```
 
 ### Seed Test Data
+
+#### Option 1: Using the Seed Script (Recommended)
 ```bash
-# Seed sample data for testing
-curl -X POST http://localhost:9999/v1/api/seed/all
+# Make the script executable and run it
+chmod +x seed-data.sh
+./seed-data.sh
 ```
+
+#### Option 2: Using cURL
+```bash
+# Seed all sample data (users and products)
+curl -X POST http://localhost:9999/v1/api/seed/all
+
+# Or seed separately
+curl -X POST http://localhost:9999/v1/api/seed/users
+curl -X POST http://localhost:9999/v1/api/seed/products
+```
+
+#### Option 3: Using Admin Dashboard
+1. Start the frontend: `cd client && npm run dev`
+2. Go to http://localhost:3000
+3. Login as admin: `admin@example.com` / `admin123`
+4. Navigate to Admin Dashboard
+5. Click "Seed Data" button
+
+### Sample Data Created
+
+#### Users
+- **Admin User**:
+  - Email: `admin@example.com`
+  - Password: `admin123`
+  - Role: Admin (full access)
+
+- **Customer Users**:
+  - Email: `john@example.com` / Password: `customer123`
+  - Email: `jane@example.com` / Password: `customer123`
+  - Role: Customer (shopping access)
+
+#### Products (8 Sample Items)
+- **iPhone 15 Pro** - $999.99 (50 in stock)
+- **Samsung Galaxy S24** - $899.99 (30 in stock)
+- **MacBook Pro 16-inch** - $2499.99 (20 in stock)
+- **Dell XPS 13** - $1299.99 (25 in stock)
+- **Sony WH-1000XM5** - $399.99 (100 in stock)
+- **iPad Air** - $599.99 (40 in stock)
+- **Nintendo Switch OLED** - $349.99 (60 in stock)
+- **Apple Watch Series 9** - $399.99 (80 in stock)
 
 ## 🔧 Configuration
 

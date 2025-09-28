@@ -1,7 +1,7 @@
 import { apiClient } from '../api/client'
 import type {
   MpesaPaymentRequest,
-  MpesaSTKPushRequest,
+  //MpesaSTKPushRequest,
   MpesaPaymentResponse,
   MpesaCallbackRequest,
   GeneralResponse
@@ -12,17 +12,17 @@ export class PaymentService {
    * Initiate M-Pesa STK Push
    */
   async initiateSTKPush(paymentData: MpesaPaymentRequest): Promise<GeneralResponse<MpesaPaymentResponse>> {
-    const response = await apiClient.post('/payments/mpesa/stkpush', paymentData)
+    const response = await apiClient.post('/v1/api/mpesa/stkpush', paymentData)
     return response.data
   }
 
   /**
-   * Process M-Pesa callback
-   */
-  async processCallback(callbackData: MpesaCallbackRequest): Promise<GeneralResponse<void>> {
-    const response = await apiClient.post('/payments/mpesa/callback', callbackData)
-    return response.data
-  }
+    * Process M-Pesa callback
+    */
+   async processCallback(callbackData: MpesaCallbackRequest): Promise<GeneralResponse<void>> {
+     const response = await apiClient.post('/v1/api/mpesa/callback', callbackData)
+     return response.data
+   }
 
   /**
    * Get payment status

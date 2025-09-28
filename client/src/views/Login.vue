@@ -108,9 +108,13 @@ const handleLogin = async () => {
 
     ElMessage.success('Login successful!')
 
-    // Redirect to intended page or home
-    const redirectPath = route.query.redirect || '/'
-    router.push(redirectPath)
+    // Note: Auth store now handles automatic redirects based on user role
+    // Only redirect manually if auth store doesn't handle it
+    const redirectPath = route.query.redirect
+    if (redirectPath && response.data.user.role !== 'admin') {
+      router.push(redirectPath)
+    }
+    // For admins, the auth store automatically redirects to /admin
 
   } catch (error) {
     console.error('Login error:', error)

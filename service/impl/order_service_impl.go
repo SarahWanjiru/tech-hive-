@@ -97,7 +97,7 @@ func (orderService *orderServiceImpl) CreateOrder(ctx context.Context, userId ui
 		orderItems = append(orderItems, orderItem)
 
 		// Update product stock
-		if err := tx.Model(&product).Update("stock", gorm.Expr("stock - ?", cartItem.Quantity)).Error; err != nil {
+		if err := tx.Model(&product).Update("quantity", gorm.Expr("quantity - ?", cartItem.Quantity)).Error; err != nil {
 			tx.Rollback()
 			return model.OrderModel{}, err
 		}

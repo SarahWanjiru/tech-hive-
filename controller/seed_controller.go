@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/tech-hive/ecommerce/configuration"
+	"github.com/tech-hive/ecommerce/middleware"
 	"github.com/tech-hive/ecommerce/model"
 	"github.com/tech-hive/ecommerce/service"
 	"github.com/gofiber/fiber/v2"
@@ -17,10 +18,10 @@ type SeedController struct {
 }
 
 func (controller SeedController) Route(app *fiber.App) {
-	app.Post("/v1/api/seed/users", controller.SeedUsers)
-	app.Post("/v1/api/seed/products", controller.SeedProducts)
-	app.Post("/v1/api/seed/all", controller.SeedAll)
-}
+ 	app.Post("/v1/api/seed/users", middleware.AuthenticateJWT("customer", controller.Config), controller.SeedUsers)
+ 	app.Post("/v1/api/seed/products", middleware.AuthenticateJWT("customer", controller.Config), controller.SeedProducts)
+ 	app.Post("/v1/api/seed/all", middleware.AuthenticateJWT("customer", controller.Config), controller.SeedAll)
+ }
 
 // SeedUsers godoc
 // @Summary Seed sample users

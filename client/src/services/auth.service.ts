@@ -33,17 +33,37 @@ export const authService = {
    */
   async login(credentials: LoginRequest): Promise<GeneralResponse> {
     try {
+      console.log('🔑 Attempting login for:', credentials.email)
+
       const response = await apiClient.post<GeneralResponse>('/v1/api/authentication', {
         email: credentials.email,
         password: credentials.password
       })
 
-      if (response.data?.data?.token) {
+      console.log('🔑 Login response:', {
+        hasData: !!response.data,
+        hasToken: !!response.data?.data?.token,
+        userRole: response.data?.data?.user?.role,
+        statusCode: response.status
+      })
+
+      if (response.data?.data?.token && response.data?.data?.user) {
         this.setAuthData(response.data.data)
+      } else {
+        console.error('❌ Incomplete auth response:', {
+          hasToken: !!response.data?.data?.token,
+          hasUser: !!response.data?.data?.user,
+          userRole: response.data?.data?.user?.role
+        })
       }
 
       return response.data
     } catch (error: any) {
+      console.error('❌ Login error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      })
       throw new Error(error.response?.data?.message || 'Login failed')
     }
   },
@@ -64,9 +84,17 @@ export const authService = {
   getCurrentUser(): User | null {
     try {
       const userData = localStorage.getItem('user_data')
-      return userData && userData !== 'undefined' ? JSON.parse(userData) : null
+      console.log('👤 Getting user data from localStorage:', {
+        exists: !!userData,
+        notUndefined: userData !== 'undefined',
+        length: userData?.length
+      })
+
+      const result = userData && userData !== 'undefined' ? JSON.parse(userData) : null
+      console.log('👤 Parsed user data:', result)
+      return result
     } catch (error) {
-      console.error('Error parsing user data:', error)
+      console.error('❌ Error parsing user data:', error)
       localStorage.removeItem('user_data')
       return null
     }
@@ -77,7 +105,12 @@ export const authService = {
    * @returns Auth token or null
    */
   getToken(): string | null {
-    return localStorage.getItem('auth_token')
+    const token = localStorage.getItem('auth_token')
+    console.log('🔑 Getting token from localStorage:', {
+      exists: !!token,
+      length: token?.length
+    })
+    return token
   },
 
   /**
@@ -102,8 +135,25 @@ export const authService = {
    * @param authData - Authentication response data
    */
   setAuthData(authData: { token: string; user: User }): void {
+    console.log('🔐 Storing auth data:', {
+      hasToken: !!authData.token,
+      tokenLength: authData.token?.length,
+      user: authData.user,
+      userRole: authData.user?.role
+    })
+
     localStorage.setItem('auth_token', authData.token)
     localStorage.setItem('user_data', JSON.stringify(authData.user))
+
+    // Verify storage worked
+    const storedToken = localStorage.getItem('auth_token')
+    const storedUser = localStorage.getItem('user_data')
+
+    console.log('✅ Storage verification:', {
+      tokenStored: !!storedToken,
+      userStored: !!storedUser,
+      tokenLength: storedToken?.length
+    })
   },
 
   /**

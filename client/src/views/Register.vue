@@ -157,8 +157,12 @@ const handleRegister = async () => {
 
     ElMessage.success('Account created successfully!')
 
-    // Redirect to home page
-    router.push('/')
+    // Redirect based on user role
+    if (registerForm.role === 'admin') {
+      router.push('/admin')
+    } else {
+      router.push('/')
+    }
 
   } catch (error) {
     console.error('Registration error:', error)

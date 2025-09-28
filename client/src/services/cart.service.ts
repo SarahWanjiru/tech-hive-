@@ -12,7 +12,7 @@ export class CartService {
    * Get user's cart
    */
   async getCart(): Promise<GeneralResponse<Cart>> {
-    const response = await apiClient.get('/cart')
+    const response = await apiClient.get('/v1/api/cart')
     return response.data
   }
 
@@ -24,7 +24,7 @@ export class CartService {
       product_id: productId,
       quantity
     }
-    const response = await apiClient.post('/cart/items', cartData)
+    const response = await apiClient.post('/v1/api/cart/items', cartData)
     return response.data
   }
 
@@ -33,7 +33,7 @@ export class CartService {
    */
   async updateCartItem(itemId: number, quantity: number): Promise<GeneralResponse<CartItem>> {
     const updateData: UpdateCartItemModel = { quantity }
-    const response = await apiClient.put(`/cart/items/${itemId}`, updateData)
+    const response = await apiClient.put(`/v1/api/cart/items/${itemId}`, updateData)
     return response.data
   }
 
@@ -41,7 +41,7 @@ export class CartService {
    * Remove item from cart
    */
   async removeFromCart(itemId: number): Promise<GeneralResponse<void>> {
-    const response = await apiClient.delete(`/cart/items/${itemId}`)
+    const response = await apiClient.delete(`/v1/api/cart/items/${itemId}`)
     return response.data
   }
 
@@ -49,23 +49,36 @@ export class CartService {
    * Clear entire cart
    */
   async clearCart(): Promise<GeneralResponse<void>> {
-    const response = await apiClient.delete('/cart')
+    const response = await apiClient.delete('/v1/api/cart')
     return response.data
   }
 
   /**
    * Get cart item count
    */
-  async getCartCount(): Promise<GeneralResponse<number>> {
-    const response = await apiClient.get('/cart/count')
-    return response.data
-  }
+  // Note: getCartCount endpoint not implemented in backend
+  // async getCartCount(): Promise<GeneralResponse<number>> {
+  //   const response = await apiClient.get('/v1/api/cart/count')
+  //   return response.data
+  // }
 
   /**
    * Validate cart data
    */
   validateCartData(productId: string, quantity: number): boolean {
-    return productId.length > 0 && quantity > 0
+    console.log('🔍 Validating cart data:', {
+      productId,
+      productIdType: typeof productId,
+      productIdLength: productId?.length,
+      quantity,
+      quantityType: typeof quantity
+    })
+
+    const isValid = !!(productId && productId.length > 0 && quantity > 0)
+
+    console.log('✅ Validation result:', isValid)
+
+    return isValid
   }
 }
 

@@ -19,11 +19,11 @@ func NewTransactionController(transactionService *service.TransactionService, co
 }
 
 func (controller TransactionController) Route(app *fiber.App) {
-	app.Post("/v1/api/transaction", middleware.AuthenticateJWT("ROLE_USER", controller.Config), controller.Create)
-	app.Delete("/v1/api/transaction/:id", middleware.AuthenticateJWT("ROLE_USER", controller.Config), controller.Delete)
-	app.Get("/v1/api/transaction/:id", middleware.AuthenticateJWT("ROLE_USER", controller.Config), controller.FindById)
-	app.Get("/v1/api/transaction", middleware.AuthenticateJWT("ROLE_USER", controller.Config), controller.FindAll)
-}
+ 	app.Post("/v1/api/transaction", middleware.AuthenticateJWT("customer", controller.Config), controller.Create)
+ 	app.Delete("/v1/api/transaction/:id", middleware.AuthenticateJWT("customer", controller.Config), controller.Delete)
+ 	app.Get("/v1/api/transaction/:id", middleware.AuthenticateJWT("customer", controller.Config), controller.FindById)
+ 	app.Get("/v1/api/transaction", middleware.AuthenticateJWT("customer", controller.Config), controller.FindAll)
+ }
 
 // Create func create transaction.
 // @Description create transaction.

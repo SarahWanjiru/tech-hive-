@@ -69,6 +69,27 @@ export const useOrderStore = defineStore('order', {
     },
 
     /**
+     * Fetch all orders (admin only)
+     */
+    async fetchAllOrders(params?: { page?: number; limit?: number }): Promise<{ data: Order[], total: number }> {
+      this.loading = true
+      this.error = null
+
+      try {
+        const response = await orderService.getOrders(params)
+        return {
+          data: response.data,
+          total: response.data.length
+        }
+      } catch (error: any) {
+        this.error = error.message || 'Failed to fetch orders'
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
+    /**
      * Fetch single order by ID
      */
     async fetchOrderById(id: string): Promise<Order> {
@@ -181,6 +202,36 @@ export const useOrderStore = defineStore('order', {
       } catch (error: any) {
         console.error('Failed to fetch order stats:', error)
         // Don't throw error for stats, just log it
+      }
+    },
+
+    /**
+     * Process M-Pesa payment
+     */
+    async processMpesaPayment(paymentData: {
+      order_id: number
+      phone_number: string
+      amount: number
+    }): Promise<{ data: any }> {
+      this.loading = true
+      this.error = null
+
+      try {
+        // Use the payment service to process M-Pesa payment
+        const { paymentService } = await import('../services/payment.service')
+
+        const response = await paymentService.initiateSTKPush({
+          phone_number: paymentData.phone_number,
+          amount: paymentData.amount,
+          order_id: paymentData.order_id
+        })
+
+        return response
+      } catch (error: any) {
+        this.error = error.message || 'Failed to process M-Pesa payment'
+        throw error
+      } finally {
+        this.loading = false
       }
     },
 

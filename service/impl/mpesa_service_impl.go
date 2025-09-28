@@ -88,33 +88,36 @@ func (mpesaService *mpesaServiceImpl) InitiateSTKPush(ctx context.Context, reque
 		CustomerMessage:   customerMessage,
 	}
 
-	// If request was accepted, create payment record
-	if responseCode == "0" {
-		payment := entity.Payment{
-			OrderId:       request.OrderId,
-			TransactionId: checkoutRequestId,
-			Status:        "pending",
-		}
+	// Create payment record regardless of response code
+	payment := entity.Payment{
+		OrderId:       request.OrderId,
+		TransactionId: checkoutRequestId,
+		Status:        "pending",
+	}
 
-		// Use transaction to ensure consistency
-		tx := mpesaService.DB.WithContext(ctx).Begin()
-		defer func() {
-			if r := recover(); r != nil {
-				tx.Rollback()
-			}
-		}()
-
-		if err := tx.Create(&payment).Error; err != nil {
+	// Use transaction to ensure consistency
+	tx := mpesaService.DB.WithContext(ctx).Begin()
+	defer func() {
+		if r := recover(); r != nil {
 			tx.Rollback()
-			return model.MpesaPaymentResponse{}, err
 		}
+	}()
 
-		// Simulate payment completion after a delay
+	if err := tx.Create(&payment).Error; err != nil {
+		tx.Rollback()
+		return model.MpesaPaymentResponse{}, err
+	}
+
+	// If request was accepted, simulate payment completion after a delay
+	if responseCode == "0" {
 		go mpesaService.simulatePaymentCompletion(ctx, checkoutRequestId, request.OrderId)
+	} else {
+		// If request failed, mark payment as failed immediately
+		tx.Model(&payment).Update("status", "failed")
+	}
 
-		if err := tx.Commit().Error; err != nil {
-			return model.MpesaPaymentResponse{}, err
-		}
+	if err := tx.Commit().Error; err != nil {
+		return model.MpesaPaymentResponse{}, err
 	}
 
 	return response, nil

@@ -12,18 +12,25 @@ import (
 func AuthenticateJWT(role string, config configuration.Config) func(*fiber.Ctx) error {
 	jwtSecret := config.Get("JWT_SECRET_KEY")
 	return jwtware.New(jwtware.Config{
-		SigningKey: []byte(jwtSecret),
+		SigningKey:    []byte(jwtSecret),
+		TokenLookup:   "header:Authorization",
+		AuthScheme:    "Bearer",
+		ContextKey:    "user",
 		SuccessHandler: func(ctx *fiber.Ctx) error {
 			user := ctx.Locals("user").(*jwt.Token)
 			claims := user.Claims.(jwt.MapClaims)
-			roles := claims["roles"].([]interface{})
 
-			common.NewLogger().Info("role function ", role, " role user ", roles)
-			for _, roleInterface := range roles {
-				roleMap := roleInterface.(map[string]interface{})
-				if roleMap["role"] == role {
-					return ctx.Next()
-				}
+			// Extract user info from token
+			userEmail := claims["username"].(string)
+			userRole := claims["role"].(string)
+
+			common.NewLogger().Info("JWT validated - User: ", userEmail, " Role: ", userRole, " Required: ", role)
+
+			if userRole == role {
+				// Store user info in context for controllers to use
+				ctx.Locals("user_email", userEmail)
+				ctx.Locals("user_role", userRole)
+				return ctx.Next()
 			}
 
 			return ctx.
@@ -35,6 +42,8 @@ func AuthenticateJWT(role string, config configuration.Config) func(*fiber.Ctx) 
 				})
 		},
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			common.NewLogger().Error("JWT Authentication Error: ", err.Error())
+			common.NewLogger().Error("Request Headers: ", c.GetReqHeaders())
 			if err.Error() == "Missing or malformed JWT" {
 				return c.
 					Status(fiber.StatusBadRequest).

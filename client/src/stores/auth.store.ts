@@ -27,17 +27,48 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     /**
-     * Initialize auth state from localStorage
-     */
+      * Initialize auth state from localStorage
+      */
     initializeAuth(): void {
-      const token = authService.getToken()
-      const user = authService.getCurrentUser()
+      try {
+        // First, clean up any temporary bypass data
+        this.clearTemporaryBypassData()
 
-      if (token && user) {
-        this.token = token
-        this.user = user
-        this.isAuthenticated = true
+        const token = authService.getToken()
+        const user = authService.getCurrentUser()
+
+        console.log('InitializeAuth - Token:', token ? 'present' : 'missing')
+        console.log('InitializeAuth - User:', user ? 'present' : 'missing')
+
+        if (token && user) {
+          this.token = token
+          this.user = user
+          this.isAuthenticated = true
+
+          // Debug logging for admin role
+          console.log('Auth initialized successfully:', {
+            user: user,
+            role: user.role,
+            isAdmin: user.role === 'admin'
+          })
+        } else {
+          console.log('No valid auth data found - clearing state')
+          this.clearAuthState()
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error)
+        this.clearAuthState()
       }
+    },
+
+    /**
+     * Clear authentication state
+     */
+    clearAuthState(): void {
+      this.token = null
+      this.user = null
+      this.isAuthenticated = false
+      this.error = null
     },
 
     /**
@@ -54,6 +85,20 @@ export const useAuthStore = defineStore('auth', {
         this.token = response.data.token
         this.user = response.data.user
         this.isAuthenticated = true
+
+        // Debug logging for role
+        console.log('User logged in:', {
+          user: response.data.user,
+          role: response.data.user.role,
+          isAdmin: response.data.user.role === 'admin'
+        })
+
+        // Auto-redirect based on role
+        if (response.data.user.role === 'admin') {
+          // Import router dynamically to avoid circular dependency
+          const router = await import('../router')
+          router.default.push('/admin')
+        }
 
         return response
       } catch (error: any) {
@@ -79,6 +124,12 @@ export const useAuthStore = defineStore('auth', {
         this.user = response.data.user
         this.isAuthenticated = true
 
+        // Auto-redirect based on role (for admin registrations)
+        if (response.data.user.role === 'admin') {
+          const router = await import('../router')
+          router.default.push('/admin')
+        }
+
         return response
       } catch (error: any) {
         this.error = error.message
@@ -93,10 +144,7 @@ export const useAuthStore = defineStore('auth', {
      */
     logout(): void {
       authService.logout()
-      this.token = null
-      this.user = null
-      this.isAuthenticated = false
-      this.error = null
+      this.clearAuthState()
     },
 
     /**
@@ -115,6 +163,62 @@ export const useAuthStore = defineStore('auth', {
         this.user = { ...this.user, ...userData }
         // Update localStorage as well
         localStorage.setItem('user_data', JSON.stringify(this.user))
+      }
+    },
+
+    /**
+     * Refresh authentication state
+     */
+    refreshAuth(): void {
+      this.initializeAuth()
+    },
+
+    /**
+     * Force set admin status (for debugging)
+     */
+    setAdminStatus(isAdmin: boolean): void {
+      if (this.user) {
+        this.user.role = isAdmin ? 'admin' : 'customer'
+        localStorage.setItem('user_data', JSON.stringify(this.user))
+      }
+    },
+
+    /**
+      * Disable temporary bypass (for production)
+      */
+    disableTemporaryBypass(): void {
+      // Clear any bypass data
+      if (this.token === 'temp-admin-token') {
+        this.clearAuthState()
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('user_data')
+      }
+    },
+
+    /**
+      * Clear any temporary bypass data from localStorage
+      */
+    clearTemporaryBypassData(): void {
+      try {
+        const token = localStorage.getItem('auth_token')
+        const userData = localStorage.getItem('user_data')
+
+        // Check if this is temporary bypass data
+        if (token && userData) {
+          const user = JSON.parse(userData)
+
+          // If this is the temporary admin user from bypass, clear it
+          if (user && user.email === 'admin@example.com' && user.name === 'Admin User' && token.startsWith('temp-admin-token')) {
+            console.log('🧹 Clearing temporary bypass data from localStorage')
+            localStorage.removeItem('auth_token')
+            localStorage.removeItem('user_data')
+          }
+        }
+      } catch (error) {
+        console.error('Error clearing temporary bypass data:', error)
+        // If there's any error parsing, clear the data to be safe
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('user_data')
       }
     }
   }

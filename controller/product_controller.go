@@ -19,9 +19,9 @@ func NewProductController(productService *service.ProductService, config configu
 }
 
 func (controller ProductController) Route(app *fiber.App) {
-  	app.Post("/v1/api/product", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.Create)
-  	app.Put("/v1/api/product/:id", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.Update)
-  	app.Delete("/v1/api/product/:id", middleware.AuthenticateJWT("ROLE_ADMIN", controller.Config), controller.Delete)
+  	app.Post("/v1/api/product", middleware.AuthenticateJWT("admin", controller.Config), controller.Create)
+  	app.Put("/v1/api/product/:id", middleware.AuthenticateJWT("admin", controller.Config), controller.Update)
+  	app.Delete("/v1/api/product/:id", middleware.AuthenticateJWT("admin", controller.Config), controller.Delete)
   	app.Get("/v1/api/product/:id", middleware.AuthenticateJWT("customer", controller.Config), controller.FindById)
   	app.Get("/v1/api/product", controller.FindAll) // Public endpoint for browsing products
   	app.Post("/v1/api/product/search", middleware.AuthenticateJWT("customer", controller.Config), controller.Search)

@@ -38,17 +38,16 @@ func (controller UserController) Authentication(c *fiber.Ctx) error {
 	exception.PanicLogging(err)
 
 	result := controller.UserService.Authentication(c.Context(), request)
-	userRoles := []map[string]interface{}{
-		{
-			"role": result.Role,
-		},
-	}
-	tokenJwtResult := common.GenerateToken(result.Email, userRoles, controller.Config)
+	tokenJwtResult := common.GenerateToken(result.Email, result.Role, result.Id, controller.Config)
 	resultWithToken := map[string]interface{}{
-		"token":  tokenJwtResult,
-		"email":  result.Email,
-		"name":   result.Name,
-		"role":   userRoles,
+		"token": tokenJwtResult,
+		"user": map[string]interface{}{
+			"id":        result.Id,
+			"name":      result.Name,
+			"email":     result.Email,
+			"role":      result.Role,
+			"created_at": result.CreatedAt,
+		},
 	}
 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
 		Code:    200,
