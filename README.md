@@ -23,7 +23,7 @@ A comprehensive mini-ecommerce application built with Go Fiber backend and Vue.j
 ## 🛠 Technology Stack
 
 - **Backend**: Go 1.21, Go Fiber
-- **Frontend**: Vue.js 3, TypeScript, Pinia
+- **Frontend**: Vue.js 3, TypeScript, Vite, Element Plus, Pinia
 - **Database**: MySQL 8.0
 - **Cache**: Redis
 - **ORM**: GORM
@@ -35,8 +35,6 @@ A comprehensive mini-ecommerce application built with Go Fiber backend and Vue.j
 ## 📋 Prerequisites
 
 - Docker and Docker Compose
-- Go 1.21+ (for local development)
-- Node.js 18+ and npm (for frontend development)
 - Git
 
 ## 🚀 Quick Start
@@ -103,7 +101,9 @@ A comprehensive mini-ecommerce application built with Go Fiber backend and Vue.j
     go run main.go
     ```
 
- ### Frontend Development Setup
+ ### Frontend Development Setup (Optional)
+
+ > **Note**: The Vue.js frontend runs in a Docker container. For development, you can work directly with the containerized version. If you need to modify frontend code locally, install Node.js dependencies:
 
  1. **Install frontend dependencies**
     ```bash
@@ -374,17 +374,16 @@ MPESA_CALLBACK_URL=http://localhost:9999/v1/api/mpesa/callback
 
 ## 🐳 Docker Services
 
-- **app**: Go Fiber application
+- **app**: Go Fiber backend API
+- **client**: Vue.js frontend application
 - **db**: MySQL database
-- **dbtest**: Test database
 - **redis**: Redis cache
-- **adminer**: Database management
-- **redis-commander**: Redis management
+- **adminer**: Database management (http://localhost:8080)
 
 ## 📁 Project Structure
 
 ```
-├── client/                 # Frontend application (Vue.js)
+├── client/                 # Vue.js frontend application
 │   ├── public/            # Static assets
 │   ├── src/
 │   │   ├── api/          # API client configuration
@@ -398,8 +397,10 @@ MPESA_CALLBACK_URL=http://localhost:9999/v1/api/mpesa/callback
 │   │   ├── types/        # TypeScript type definitions
 │   │   ├── utils/        # Utility functions
 │   │   └── views/        # Vue pages/views
-│   ├── Dockerfile        # Frontend container config
-│   └── package.json      # Frontend dependencies
+│   ├── Dockerfile        # Frontend container configuration
+│   ├── package.json      # Node.js dependencies and scripts
+│   ├── vite.config.js    # Vite build configuration
+│   └── nginx.conf        # Nginx configuration for container
 ├── common/                 # Shared utilities
 ├── configuration/          # Configuration management
 ├── controller/             # HTTP controllers
@@ -443,15 +444,6 @@ docker compose -f docker-compose.prod.yml up -d
 # Run migrations
 docker compose -f docker-compose.prod.yml exec app migrate -database "$DATABASE_URL" -path db/migrations up
 ```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Run the test suite
-6. Submit a pull request
 
 ## 📝 API Testing
 
